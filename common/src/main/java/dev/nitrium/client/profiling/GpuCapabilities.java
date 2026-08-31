@@ -1,7 +1,7 @@
 package dev.nitrium.client.profiling;
 
 import dev.nitrium.config.HardwareProfile;
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLCapabilities;
@@ -70,7 +70,7 @@ public final class GpuCapabilities {
 		}
 
 		instance = new GpuCapabilities(vendor, renderer, version, dedicatedVramMb, vramQuerySupported);
-		NitriumMod.LOGGER.info(
+		Nitrium.LOGGER.info(
 				"GPU probe: {} / {} ({} MB VRAM, profile={}, vramQuery={})",
 				vendor,
 				renderer,

@@ -1,6 +1,6 @@
 package dev.nitrium.nativecore;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfigManager;
 
 /**
@@ -14,13 +14,13 @@ public final class NativeBootstrap {
 
 	public static void init() {
 		if (!NitriumConfigManager.get().enableNativeCore) {
-			NitriumMod.LOGGER.info("Nitrium native core disabled via config");
+			Nitrium.LOGGER.info("Nitrium native core disabled via config");
 			return;
 		}
 
 		NitriumNativeLoader.load();
 		memoryArena = NativeMemoryArena.create();
-		NitriumMod.LOGGER.info("Nitrium native bootstrap complete (available={})", NitriumNativeLoader.isAvailable());
+		Nitrium.LOGGER.info("Nitrium native bootstrap complete (available={})", NitriumNativeLoader.isAvailable());
 	}
 
 	public static NativeMemoryArena memoryArena() {

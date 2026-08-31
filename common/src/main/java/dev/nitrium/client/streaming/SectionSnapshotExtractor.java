@@ -1,6 +1,6 @@
 package dev.nitrium.client.streaming;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -34,7 +34,7 @@ public final class SectionSnapshotExtractor {
 					Integer paletteIndex = paletteLookup.get(stateId);
 					if (paletteIndex == null) {
 						if (palette.size() >= 256) {
-							NitriumMod.LOGGER.debug("Section Y={} exceeded 256-entry palette during snapshot", sectionY);
+							Nitrium.LOGGER.debug("Section Y={} exceeded 256-entry palette during snapshot", sectionY);
 							return null;
 						}
 						paletteIndex = palette.size();

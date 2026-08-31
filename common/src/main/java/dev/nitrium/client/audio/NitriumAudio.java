@@ -1,6 +1,6 @@
 package dev.nitrium.client.audio;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfigManager;
 
 /**
@@ -12,7 +12,7 @@ public final class NitriumAudio {
 
 	public static void init() {
 		if (!NitriumConfigManager.get().enableAsyncAudioOcclusion) {
-			NitriumMod.LOGGER.info("Nitrium async audio occlusion disabled via config");
+			Nitrium.LOGGER.info("Nitrium async audio occlusion disabled via config");
 			return;
 		}
 		AsyncAudioOcclusionEngine.init();

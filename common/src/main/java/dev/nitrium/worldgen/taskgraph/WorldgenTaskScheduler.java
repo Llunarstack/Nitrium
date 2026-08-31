@@ -1,6 +1,6 @@
 package dev.nitrium.worldgen.taskgraph;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfigManager;
 import dev.nitrium.memory.NitriumWorkerThreads;
 
@@ -39,7 +39,7 @@ public final class WorldgenTaskScheduler {
 		try {
 			task.run();
 		} catch (Exception exception) {
-			NitriumMod.LOGGER.warn("Worldgen task {} failed for chunk {}", task.type(), task.chunkPos(), exception);
+			Nitrium.LOGGER.warn("Worldgen task {} failed for chunk {}", task.type(), task.chunkPos(), exception);
 		} finally {
 			graph.markCompleted();
 		}

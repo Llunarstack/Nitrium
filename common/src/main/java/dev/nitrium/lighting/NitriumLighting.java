@@ -1,6 +1,6 @@
 package dev.nitrium.lighting;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.compat.ModCompatibility;
 import dev.nitrium.compat.NitriumFeature;
 import dev.nitrium.config.NitriumConfigManager;
@@ -14,11 +14,11 @@ public final class NitriumLighting {
 
 	public static void init() {
 		if (!NitriumConfigManager.get().enableLightingEngine) {
-			NitriumMod.LOGGER.info("Nitrium lighting engine disabled via config");
+			Nitrium.LOGGER.info("Nitrium lighting engine disabled via config");
 			return;
 		}
 		if (!ModCompatibility.isActive(NitriumFeature.LIGHTING_ENGINE)) {
-			NitriumMod.LOGGER.info("Nitrium lighting deferred — {} handles light propagation",
+			Nitrium.LOGGER.info("Nitrium lighting deferred — {} handles light propagation",
 					ModCompatibility.conflictingMod(NitriumFeature.LIGHTING_ENGINE));
 			return;
 		}

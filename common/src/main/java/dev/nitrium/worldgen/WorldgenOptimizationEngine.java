@@ -1,6 +1,6 @@
 package dev.nitrium.worldgen;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfigManager;
 import dev.nitrium.worldgen.noise.CoarseDensityPipeline;
 import dev.nitrium.worldgen.taskgraph.ChunkGenTask;
@@ -30,7 +30,7 @@ public final class WorldgenOptimizationEngine {
 		}
 
 		if (!NitriumConfigManager.get().enableWorldgenOptimization) {
-			NitriumMod.LOGGER.info("Nitrium worldgen optimization disabled via config");
+			Nitrium.LOGGER.info("Nitrium worldgen optimization disabled via config");
 			return;
 		}
 
@@ -46,7 +46,7 @@ public final class WorldgenOptimizationEngine {
 			}
 		});
 
-		NitriumMod.LOGGER.info(
+		Nitrium.LOGGER.info(
 				"Nitrium worldgen engine active (simd={}, workers={})",
 				NitriumConfigManager.get().enableSimdNoise,
 				NitriumConfigManager.get().worldgenWorkerThreads
@@ -112,7 +112,7 @@ public final class WorldgenOptimizationEngine {
 		if (stats.chunksProcessed() == 0) {
 			return;
 		}
-		NitriumMod.LOGGER.debug(
+		Nitrium.LOGGER.debug(
 				"Nitrium worldgen: {} chunks, avg {}ms, coarse={}, refined={}, tasks={}/{}",
 				stats.chunksProcessed(),
 				String.format("%.2f", stats.averageGenerationMillis()),

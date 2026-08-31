@@ -1,6 +1,6 @@
 package dev.nitrium.entity;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.compat.ModCompatibility;
 import dev.nitrium.compat.NitriumFeature;
 import dev.nitrium.config.NitriumConfigManager;
@@ -37,12 +37,12 @@ public final class EntityOptimizationEngine {
 		}
 
 		if (!NitriumConfigManager.get().enableEntityOptimization) {
-			NitriumMod.LOGGER.info("Nitrium entity optimization disabled via config");
+			Nitrium.LOGGER.info("Nitrium entity optimization disabled via config");
 			return;
 		}
 
 		if (!ModCompatibility.isActive(NitriumFeature.ENTITY_OPTIMIZATION)) {
-			NitriumMod.LOGGER.info("Nitrium entity optimization deferred — {} handles entity ticking",
+			Nitrium.LOGGER.info("Nitrium entity optimization deferred — {} handles entity ticking",
 					ModCompatibility.conflictingMod(NitriumFeature.ENTITY_OPTIMIZATION));
 			return;
 		}
@@ -58,7 +58,7 @@ public final class EntityOptimizationEngine {
 			tickDecisions.clear();
 		});
 		events.serverWorldTickStart(this::onWorldTickStart);
-		NitriumMod.LOGGER.info("Nitrium entity optimization engine active (server)");
+		Nitrium.LOGGER.info("Nitrium entity optimization engine active (server)");
 	}
 
 	private void onWorldTickStart(ServerLevel level) {

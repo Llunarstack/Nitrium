@@ -1,6 +1,6 @@
 package dev.nitrium.storage;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfigManager;
 import dev.nitrium.memory.NitriumWorkerThreads;
 import dev.nitrium.nativecore.NativeChunkIo;
@@ -40,7 +40,7 @@ public final class AsyncChunkStorageEngine {
 
 		ServerEvents.get().serverTickEnd(server -> drainQueue());
 
-		NitriumMod.LOGGER.info("Nitrium async chunk storage active (nativeRing={}, writers={})",
+		Nitrium.LOGGER.info("Nitrium async chunk storage active (nativeRing={}, writers={})",
 				nativeRing, NitriumConfigManager.get().maxConcurrentChunkWrites);
 	}
 
@@ -52,7 +52,7 @@ public final class AsyncChunkStorageEngine {
 		}
 		if (!fallbackQueue.offer(payload)) {
 			stats.recordDropped();
-			NitriumMod.LOGGER.warn("Nitrium chunk save queue full — dropping write for {}", pos);
+			Nitrium.LOGGER.warn("Nitrium chunk save queue full — dropping write for {}", pos);
 		}
 	}
 

@@ -1,6 +1,6 @@
 package dev.nitrium.itempool;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.compat.ModCompatibility;
 import dev.nitrium.compat.NitriumFeature;
 import dev.nitrium.config.NitriumConfigManager;
@@ -14,11 +14,11 @@ public final class NitriumItemPooling {
 
 	public static void init() {
 		if (!NitriumConfigManager.get().enableItemXpPooling) {
-			NitriumMod.LOGGER.info("Nitrium item/XP pooling disabled via config");
+			Nitrium.LOGGER.info("Nitrium item/XP pooling disabled via config");
 			return;
 		}
 		if (!ModCompatibility.isActive(NitriumFeature.ITEM_XP_POOLING)) {
-			NitriumMod.LOGGER.info("Nitrium item/XP pooling deferred — {} handles orb merging",
+			Nitrium.LOGGER.info("Nitrium item/XP pooling deferred — {} handles orb merging",
 					ModCompatibility.conflictingMod(NitriumFeature.ITEM_XP_POOLING));
 			return;
 		}

@@ -1,6 +1,6 @@
 package dev.nitrium.client.nativegl;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL43;
 import org.lwjgl.system.MemoryUtil;
@@ -26,7 +26,7 @@ public final class MultiDrawIndirectBatch implements AutoCloseable {
 		GL15.glBufferData(GL43.GL_DRAW_INDIRECT_BUFFER, commandMemory.capacity(), GL15.GL_DYNAMIC_DRAW);
 		GL15.glBindBuffer(GL43.GL_DRAW_INDIRECT_BUFFER, 0);
 
-		NitriumMod.LOGGER.debug("MDI command buffer: {} max draws", maxDraws);
+		Nitrium.LOGGER.debug("MDI command buffer: {} max draws", maxDraws);
 	}
 
 	public void clear() {

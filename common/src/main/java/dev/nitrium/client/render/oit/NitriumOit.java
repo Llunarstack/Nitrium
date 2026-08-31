@@ -1,6 +1,6 @@
 package dev.nitrium.client.render.oit;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfigManager;
 
 /**
@@ -12,7 +12,7 @@ public final class NitriumOit {
 
 	public static void init() {
 		if (!NitriumConfigManager.get().enableOitTranslucency) {
-			NitriumMod.LOGGER.info("Nitrium OIT translucency disabled via config");
+			Nitrium.LOGGER.info("Nitrium OIT translucency disabled via config");
 			return;
 		}
 		WeightedBlendedOitPipeline.init();

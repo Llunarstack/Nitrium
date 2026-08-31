@@ -1,6 +1,6 @@
 package dev.nitrium.client.culling.entity;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import org.lwjgl.opengl.GL33;
 
 /**
@@ -30,7 +30,7 @@ public final class GpuEntityOcclusionQuery {
 
 		// TODO: allocate the low-res FBO + depth attachment at bufferSize x bufferSize.
 		initialized = true;
-		NitriumMod.LOGGER.debug("Nitrium entity occlusion proxy buffer: {}x{}", bufferSize, bufferSize);
+		Nitrium.LOGGER.debug("Nitrium entity occlusion proxy buffer: {}x{}", bufferSize, bufferSize);
 	}
 
 	/**

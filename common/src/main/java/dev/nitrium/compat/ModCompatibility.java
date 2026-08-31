@@ -1,6 +1,6 @@
 package dev.nitrium.compat;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfig;
 import dev.nitrium.config.NitriumConfigManager;
 import dev.nitrium.platform.Platform;
@@ -52,7 +52,7 @@ public final class ModCompatibility {
 
 		NitriumConfig config = NitriumConfigManager.get();
 		if (!config.enableCompatibilityAutoDisable) {
-			NitriumMod.LOGGER.info("Nitrium compatibility auto-disable is off — all features may overlap with other mods");
+			Nitrium.LOGGER.info("Nitrium compatibility auto-disable is off — all features may overlap with other mods");
 			return;
 		}
 
@@ -126,7 +126,7 @@ public final class ModCompatibility {
 
 	private static void logReport() {
 		if (deferred.isEmpty()) {
-			NitriumMod.LOGGER.info("Nitrium compatibility: no conflicting performance mods detected");
+			Nitrium.LOGGER.info("Nitrium compatibility: no conflicting performance mods detected");
 			return;
 		}
 
@@ -142,7 +142,7 @@ public final class ModCompatibility {
 					.append(')');
 			first = false;
 		}
-		NitriumMod.LOGGER.info(builder.toString());
+		Nitrium.LOGGER.info(builder.toString());
 
 		List<String> complements = new ArrayList<>();
 		if (isSodiumLoaded()) {
@@ -152,7 +152,7 @@ public final class ModCompatibility {
 			complements.add("iris");
 		}
 		if (!complements.isEmpty()) {
-			NitriumMod.LOGGER.info("Nitrium complements: {} — GPU culling/streaming remain active",
+			Nitrium.LOGGER.info("Nitrium complements: {} — GPU culling/streaming remain active",
 					String.join(", ", complements));
 		}
 	}

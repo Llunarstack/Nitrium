@@ -1,6 +1,6 @@
 package dev.nitrium.lighting;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfigManager;
 import dev.nitrium.platform.ServerEvents;
 import net.minecraft.core.BlockPos;
@@ -47,7 +47,7 @@ public final class LightingEngine {
 			}
 		});
 
-		NitriumMod.LOGGER.info("Nitrium lighting engine active (workers={})",
+		Nitrium.LOGGER.info("Nitrium lighting engine active (workers={})",
 				NitriumConfigManager.get().lightWorkerThreads);
 	}
 

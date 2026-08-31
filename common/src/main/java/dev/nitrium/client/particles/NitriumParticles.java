@@ -1,6 +1,6 @@
 package dev.nitrium.client.particles;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfigManager;
 
 /**
@@ -12,7 +12,7 @@ public final class NitriumParticles {
 
 	public static void init() {
 		if (!NitriumConfigManager.get().enableGpuParticles) {
-			NitriumMod.LOGGER.info("Nitrium GPU particles disabled via config");
+			Nitrium.LOGGER.info("Nitrium GPU particles disabled via config");
 			return;
 		}
 		GpuParticleEngine.init();

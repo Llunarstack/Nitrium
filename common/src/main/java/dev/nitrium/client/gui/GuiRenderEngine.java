@@ -1,6 +1,6 @@
 package dev.nitrium.client.gui;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.memory.NativeResourceCleaner;
 import dev.nitrium.client.platform.ClientEvents;
 import net.minecraft.client.Minecraft;
@@ -48,7 +48,7 @@ public final class GuiRenderEngine {
 			}
 		});
 
-		NitriumMod.LOGGER.info("Nitrium GUI SDF cache engine active");
+		Nitrium.LOGGER.info("Nitrium GUI SDF cache engine active");
 	}
 
 	private int computeHudStateHash(Minecraft client) {

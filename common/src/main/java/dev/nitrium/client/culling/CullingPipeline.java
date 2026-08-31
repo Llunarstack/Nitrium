@@ -1,6 +1,6 @@
 package dev.nitrium.client.culling;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.client.culling.entity.EntityOcclusionCuller;
 import dev.nitrium.client.culling.entity.GpuEntityOcclusionQuery;
 import dev.nitrium.client.culling.foliage.FoliageCullPolicy;
@@ -53,7 +53,7 @@ public final class CullingPipeline {
 	private void register() {
 		NitriumConfig config = NitriumConfigManager.get();
 		if (!config.enableCullingPipeline) {
-			NitriumMod.LOGGER.info("Nitrium culling pipeline disabled via config");
+			Nitrium.LOGGER.info("Nitrium culling pipeline disabled via config");
 			return;
 		}
 
@@ -68,7 +68,7 @@ public final class CullingPipeline {
 
 		events.clientTickEnd(this::onClientTickEnd);
 
-		NitriumMod.LOGGER.info("Nitrium culling pipeline active");
+		Nitrium.LOGGER.info("Nitrium culling pipeline active");
 	}
 
 	private void onWorldRenderStart() {

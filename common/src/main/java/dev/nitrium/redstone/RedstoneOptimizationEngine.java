@@ -1,6 +1,6 @@
 package dev.nitrium.redstone;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfigManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -23,7 +23,7 @@ public final class RedstoneOptimizationEngine {
 			return;
 		}
 		instance = new RedstoneOptimizationEngine();
-		NitriumMod.LOGGER.info("Nitrium redstone engine active (topological={}, sleep={})",
+		Nitrium.LOGGER.info("Nitrium redstone engine active (topological={}, sleep={})",
 				NitriumConfigManager.get().enableTopologicalRedstone,
 				NitriumConfigManager.get().enableBlockEntitySleep);
 	}

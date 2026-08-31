@@ -1,6 +1,6 @@
 package dev.nitrium.client.governor;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.client.profiling.BottleneckType;
 import dev.nitrium.client.profiling.GpuCapabilities;
 import dev.nitrium.config.HardwareProfile;
@@ -87,7 +87,7 @@ public final class ShaderQualityController {
 		upgradeStreakSeconds = 0;
 		cooldownSecondsRemaining = config.shaderTransitionCooldownSeconds;
 
-		NitriumMod.LOGGER.info("Nitrium shader governor: {} -> {} ({}) | {}",
+		Nitrium.LOGGER.info("Nitrium shader governor: {} -> {} ({}) | {}",
 				previous, currentLevel, reason, currentProfile.summary());
 		return true;
 	}

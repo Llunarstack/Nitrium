@@ -1,6 +1,6 @@
 package dev.nitrium.client.gui;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfigManager;
 
 /**
@@ -12,7 +12,7 @@ public final class NitriumGui {
 
 	public static void init() {
 		if (!NitriumConfigManager.get().enableGuiSdfCache) {
-			NitriumMod.LOGGER.info("Nitrium GUI SDF cache disabled via config");
+			Nitrium.LOGGER.info("Nitrium GUI SDF cache disabled via config");
 			return;
 		}
 		GuiRenderEngine.init();

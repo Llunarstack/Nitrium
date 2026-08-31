@@ -1,6 +1,6 @@
 package dev.nitrium.client.audio;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfigManager;
 import dev.nitrium.memory.NitriumWorkerThreads;
 import dev.nitrium.client.platform.ClientEvents;
@@ -40,7 +40,7 @@ public final class AsyncAudioOcclusionEngine {
 	private void register() {
 		ClientEvents.get().clientTickEnd(client -> cache.clear());
 
-		NitriumMod.LOGGER.info("Nitrium async audio occlusion active (voxel={} blocks, workers={})",
+		Nitrium.LOGGER.info("Nitrium async audio occlusion active (voxel={} blocks, workers={})",
 				NitriumConfigManager.get().audioVoxelSizeBlocks,
 				NitriumConfigManager.get().audioWorkerThreads);
 	}

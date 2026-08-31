@@ -1,6 +1,6 @@
 package dev.nitrium.client.streaming;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfigManager;
 import dev.nitrium.memory.NitriumWorkerThreads;
 import dev.nitrium.platform.Platform;
@@ -39,7 +39,7 @@ public final class AsyncChunkCacheStore {
 
 		Path root = Platform.gameDir().resolve("nitrium").resolve("cache");
 		instance = new AsyncChunkCacheStore(root);
-		NitriumMod.LOGGER.info("Nitrium section cache root: {}", root.toAbsolutePath());
+		Nitrium.LOGGER.info("Nitrium section cache root: {}", root.toAbsolutePath());
 	}
 
 	public static AsyncChunkCacheStore get() {
@@ -56,7 +56,7 @@ public final class AsyncChunkCacheStore {
 			try (InputStream input = Files.newInputStream(path)) {
 				return Optional.of(ChunkCacheCodec.decode(input));
 			} catch (IOException exception) {
-				NitriumMod.LOGGER.warn("Failed to read cached section {}", key, exception);
+				Nitrium.LOGGER.warn("Failed to read cached section {}", key, exception);
 				return Optional.empty();
 			}
 		}, ioExecutor);
@@ -71,7 +71,7 @@ public final class AsyncChunkCacheStore {
 					ChunkCacheCodec.encode(data, output);
 				}
 			} catch (IOException exception) {
-				NitriumMod.LOGGER.warn("Failed to write cached section {}", key, exception);
+				Nitrium.LOGGER.warn("Failed to write cached section {}", key, exception);
 			}
 		}, ioExecutor);
 	}

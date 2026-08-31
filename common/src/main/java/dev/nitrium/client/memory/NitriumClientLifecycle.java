@@ -1,6 +1,6 @@
 package dev.nitrium.client.memory;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.client.culling.CullingPipeline;
 import dev.nitrium.client.culling.terrain.HiZOcclusionCuller;
 import dev.nitrium.client.entity.EntityRenderOptimizer;
@@ -37,7 +37,7 @@ public final class NitriumClientLifecycle {
 		events.clientWorldChanged(NitriumClientLifecycle::onClientWorldChange);
 		events.clientStopping(NitriumClientLifecycle::onClientStopping);
 
-		NitriumMod.LOGGER.info("Nitrium client lifecycle hooks registered");
+		Nitrium.LOGGER.info("Nitrium client lifecycle hooks registered");
 	}
 
 	private static void onClientWorldChange(ClientLevel newWorld) {
@@ -90,9 +90,9 @@ public final class NitriumClientLifecycle {
 		}
 
 		if (level != null) {
-			NitriumMod.LOGGER.debug("Nitrium flushed client caches for {}", level.dimension().identifier());
+			Nitrium.LOGGER.debug("Nitrium flushed client caches for {}", level.dimension().identifier());
 		} else {
-			NitriumMod.LOGGER.debug("Nitrium flushed client caches after world disconnect");
+			Nitrium.LOGGER.debug("Nitrium flushed client caches after world disconnect");
 		}
 	}
 
@@ -128,7 +128,7 @@ public final class NitriumClientLifecycle {
 		}
 
 		NativeBootstrap.shutdown();
-		NitriumMod.LOGGER.info("Nitrium client shutdown complete");
+		Nitrium.LOGGER.info("Nitrium client shutdown complete");
 	}
 
 	/** Called when Iris or another shader pack reloads. */
@@ -143,6 +143,6 @@ public final class NitriumClientLifecycle {
 			oit.onWorldUnload();
 		}
 
-		NitriumMod.LOGGER.debug("Nitrium invalidated GPU caches after shader reload");
+		Nitrium.LOGGER.debug("Nitrium invalidated GPU caches after shader reload");
 	}
 }

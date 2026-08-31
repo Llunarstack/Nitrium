@@ -1,6 +1,6 @@
 package dev.nitrium.client.entity;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 
 /**
  * Skeletal animation on the GPU: bone matrices blended in a compute pass, written to an SSBO, then
@@ -28,7 +28,7 @@ public final class GpuEntitySkinningCompute {
 
 		// TODO: compile and link the compute program once the shader exists.
 		initialized = true;
-		NitriumMod.LOGGER.debug("Nitrium GPU entity skinning compute initialized");
+		Nitrium.LOGGER.debug("Nitrium GPU entity skinning compute initialized");
 	}
 
 	public void dispatch(EntityInstanceBatch batch) {

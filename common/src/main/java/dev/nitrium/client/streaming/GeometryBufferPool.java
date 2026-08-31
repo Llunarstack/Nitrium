@@ -1,6 +1,6 @@
 package dev.nitrium.client.streaming;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfigManager;
 
 /**
@@ -24,7 +24,7 @@ public final class GeometryBufferPool {
 
 		int budgetMb = NitriumConfigManager.get().geometryBufferBudgetMb;
 		instance = new GeometryBufferPool(budgetMb * 1024 * 1024);
-		NitriumMod.LOGGER.info("Nitrium geometry buffer budget: {} MB", budgetMb);
+		Nitrium.LOGGER.info("Nitrium geometry buffer budget: {} MB", budgetMb);
 	}
 
 	public static GeometryBufferPool get() {

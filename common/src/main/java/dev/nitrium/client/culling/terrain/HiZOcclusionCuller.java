@@ -1,6 +1,6 @@
 package dev.nitrium.client.culling.terrain;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfigManager;
 import net.minecraft.world.phys.AABB;
 import org.lwjgl.opengl.GL;
@@ -32,7 +32,7 @@ public final class HiZOcclusionCuller {
 	public void probeCapabilities() {
 		GLCapabilities caps = GL.getCapabilities();
 		computeSupported = caps != null && caps.OpenGL43;
-		NitriumMod.LOGGER.info("Nitrium Hi-Z: compute shaders {}", computeSupported ? "available" : "unavailable");
+		Nitrium.LOGGER.info("Nitrium Hi-Z: compute shaders {}", computeSupported ? "available" : "unavailable");
 	}
 
 	/**

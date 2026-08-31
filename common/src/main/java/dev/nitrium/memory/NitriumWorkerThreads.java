@@ -1,6 +1,6 @@
 package dev.nitrium.memory;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,7 +24,7 @@ public final class NitriumWorkerThreads {
 			return thread;
 		};
 
-		NitriumMod.LOGGER.info("Nitrium worker pool '{}' created ({} threads, {} MB stack)", namePrefix, threads, STACK_SIZE_BYTES / (1024 * 1024));
+		Nitrium.LOGGER.info("Nitrium worker pool '{}' created ({} threads, {} MB stack)", namePrefix, threads, STACK_SIZE_BYTES / (1024 * 1024));
 		return Executors.newFixedThreadPool(Math.max(1, threads), factory);
 	}
 }

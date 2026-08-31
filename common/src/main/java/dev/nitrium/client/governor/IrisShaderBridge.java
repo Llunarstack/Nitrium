@@ -1,6 +1,6 @@
 package dev.nitrium.client.governor;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.platform.Platform;
 
 import java.lang.reflect.Method;
@@ -50,11 +50,11 @@ public final class IrisShaderBridge {
 			apiInstance = getInstance.invoke(null);
 			available = apiInstance != null;
 			if (available) {
-				NitriumMod.LOGGER.info("Nitrium Iris bridge connected (v0 API)");
+				Nitrium.LOGGER.info("Nitrium Iris bridge connected (v0 API)");
 			}
 		} catch (ReflectiveOperationException | LinkageError failure) {
 			available = false;
-			NitriumMod.LOGGER.debug("Iris v0 API unavailable — shader governor limited to vanilla graphics", failure);
+			Nitrium.LOGGER.debug("Iris v0 API unavailable — shader governor limited to vanilla graphics", failure);
 		}
 	}
 
@@ -92,14 +92,14 @@ public final class IrisShaderBridge {
 		if (profile.level() == ShaderQualityLevel.SURVIVAL && enabled) {
 			if (setShadersEnabled(false)) {
 				weDisabledShaders = true;
-				NitriumMod.LOGGER.info("Nitrium Iris bridge: disabled shaders (emergency — sustained GPU deficit)");
+				Nitrium.LOGGER.info("Nitrium Iris bridge: disabled shaders (emergency — sustained GPU deficit)");
 				return true;
 			}
 		} else if (weDisabledShaders && !enabled
 				&& profile.level().ordinal() >= ShaderQualityLevel.BALANCED.ordinal()) {
 			if (setShadersEnabled(true)) {
 				weDisabledShaders = false;
-				NitriumMod.LOGGER.info("Nitrium Iris bridge: re-enabled shaders (headroom recovered)");
+				Nitrium.LOGGER.info("Nitrium Iris bridge: re-enabled shaders (headroom recovered)");
 				return true;
 			}
 		}

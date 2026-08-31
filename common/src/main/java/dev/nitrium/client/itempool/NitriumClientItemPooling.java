@@ -1,6 +1,6 @@
 package dev.nitrium.client.itempool;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfigManager;
 
 /**
@@ -23,7 +23,7 @@ public final class NitriumClientItemPooling {
 			return;
 		}
 		instance = new NitriumClientItemPooling();
-		NitriumMod.LOGGER.info("Nitrium client item billboards active (distance={} blocks)",
+		Nitrium.LOGGER.info("Nitrium client item billboards active (distance={} blocks)",
 				NitriumConfigManager.get().distantItemBillboardBlocks);
 	}
 

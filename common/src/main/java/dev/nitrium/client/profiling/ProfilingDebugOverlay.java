@@ -1,6 +1,6 @@
 package dev.nitrium.client.profiling;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.client.culling.CullingPipeline;
 import dev.nitrium.client.entity.EntityRenderOptimizer;
 import dev.nitrium.client.governor.QualityGovernor;
@@ -21,7 +21,7 @@ public final class ProfilingDebugOverlay {
 
 	public static void register() {
 		ClientEvents.get().hud(
-				Identifier.fromNamespaceAndPath(NitriumMod.MOD_ID, "profiling"),
+				Identifier.fromNamespaceAndPath(Nitrium.MOD_ID, "profiling"),
 				ProfilingDebugOverlay::render
 		);
 	}

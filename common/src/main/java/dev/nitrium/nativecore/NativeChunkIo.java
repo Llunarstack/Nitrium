@@ -1,6 +1,6 @@
 package dev.nitrium.nativecore;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfigManager;
 
 /**
@@ -18,14 +18,14 @@ public final class NativeChunkIo {
 			return true;
 		}
 		if (!NitriumNativeLoader.isAvailable()) {
-			NitriumMod.LOGGER.warn("Native chunk I/O unavailable — using Java fallback queue");
+			Nitrium.LOGGER.warn("Native chunk I/O unavailable — using Java fallback queue");
 			return false;
 		}
 
 		long bytes = (long) NitriumConfigManager.get().chunkSaveRingBufferMb * 1024L * 1024L;
 		initialized = nativeInitRingBuffer(bytes);
 		if (initialized) {
-			NitriumMod.LOGGER.info("Nitrium native chunk ring buffer ready ({} MB)", NitriumConfigManager.get().chunkSaveRingBufferMb);
+			Nitrium.LOGGER.info("Nitrium native chunk ring buffer ready ({} MB)", NitriumConfigManager.get().chunkSaveRingBufferMb);
 		}
 		return initialized;
 	}

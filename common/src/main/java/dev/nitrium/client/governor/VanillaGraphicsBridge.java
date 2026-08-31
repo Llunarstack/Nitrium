@@ -1,6 +1,6 @@
 package dev.nitrium.client.governor;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import net.minecraft.client.GraphicsPreset;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
@@ -53,7 +53,7 @@ public final class VanillaGraphicsBridge {
 		}
 
 		if (changed) {
-			NitriumMod.LOGGER.debug("Nitrium vanilla graphics: preset={}, entityShadows={}, particles={}",
+			Nitrium.LOGGER.debug("Nitrium vanilla graphics: preset={}, entityShadows={}, particles={}",
 					desiredPreset, desiredEntityShadows, desiredParticles);
 		}
 		return changed;

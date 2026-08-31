@@ -1,6 +1,6 @@
 package dev.nitrium.worldgen.taskgraph;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 
 import java.util.Deque;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -81,6 +81,6 @@ public final class LockFreeTaskGraph {
 		for (Deque<ChunkGenTask> queue : localQueues) {
 			queue.clear();
 		}
-		NitriumMod.LOGGER.debug("Nitrium worldgen task graph shut down");
+		Nitrium.LOGGER.debug("Nitrium worldgen task graph shut down");
 	}
 }

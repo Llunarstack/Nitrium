@@ -1,6 +1,6 @@
 package dev.nitrium.memory;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 
 import java.lang.ref.Cleaner;
 import java.util.concurrent.atomic.AtomicLong;
@@ -24,7 +24,7 @@ public final class NativeResourceCleaner {
 				cleanup.run();
 				cleaned.incrementAndGet();
 			} catch (Exception exception) {
-				NitriumMod.LOGGER.warn("Native resource cleanup failed", exception);
+				Nitrium.LOGGER.warn("Native resource cleanup failed", exception);
 			}
 		});
 	}

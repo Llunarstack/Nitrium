@@ -1,7 +1,7 @@
 package dev.nitrium.client.nativegl;
 
 import dev.nitrium.memory.NativeResourceCleaner;
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL30;
@@ -43,12 +43,12 @@ public final class PersistentMappedBuffer implements AutoCloseable {
 		if (mapping == null) {
 			persistent = false;
 			mapped = null;
-			NitriumMod.LOGGER.warn("Persistent buffer mapping unavailable — falling back to dynamic buffer");
+			Nitrium.LOGGER.warn("Persistent buffer mapping unavailable — falling back to dynamic buffer");
 			GL15.glBufferData(GL30.GL_ARRAY_BUFFER, capacityBytes, GL15.GL_DYNAMIC_DRAW);
 		} else {
 			persistent = true;
 			mapped = mapping;
-			NitriumMod.LOGGER.info("Persistent mapped buffer allocated: {} bytes", capacityBytes);
+			Nitrium.LOGGER.info("Persistent mapped buffer allocated: {} bytes", capacityBytes);
 		}
 
 		GL15.glBindBuffer(GL30.GL_ARRAY_BUFFER, 0);

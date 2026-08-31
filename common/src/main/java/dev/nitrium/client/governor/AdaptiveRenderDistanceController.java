@@ -1,6 +1,6 @@
 package dev.nitrium.client.governor;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.client.profiling.BottleneckType;
 import dev.nitrium.client.profiling.GpuCapabilities;
 import dev.nitrium.config.NitriumConfig;
@@ -85,7 +85,7 @@ public final class AdaptiveRenderDistanceController {
 		int clamped = Math.clamp(desired, min, max);
 		if (clamped != option.get()) {
 			option.set(clamped);
-			NitriumMod.LOGGER.debug("Nitrium adaptive render distance: {} -> {} chunks ({})",
+			Nitrium.LOGGER.debug("Nitrium adaptive render distance: {} -> {} chunks ({})",
 					lastAppliedChunks, clamped, reason);
 		}
 		lastAppliedChunks = clamped;

@@ -1,6 +1,6 @@
 package dev.nitrium.client.entity;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.client.nativegl.GlContext;
 import dev.nitrium.config.NitriumConfigManager;
 import org.lwjgl.opengl.GL15;
@@ -52,7 +52,7 @@ public final class EntityTransformBuffer {
 		ssboId = GL15.glGenBuffers();
 		// TODO: glBufferData(GL_SHADER_STORAGE_BUFFER, capacity * 68, GL_DYNAMIC_DRAW).
 		initialized = true;
-		NitriumMod.LOGGER.debug("Nitrium entity transform SSBO: {} instances max", capacityInstances);
+		Nitrium.LOGGER.debug("Nitrium entity transform SSBO: {} instances max", capacityInstances);
 		return true;
 	}
 

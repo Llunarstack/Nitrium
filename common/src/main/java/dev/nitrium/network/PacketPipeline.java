@@ -1,6 +1,6 @@
 package dev.nitrium.network;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfigManager;
 import dev.nitrium.memory.NitriumWorkerThreads;
 import dev.nitrium.nativecore.NativePacketCompressor;
@@ -31,7 +31,7 @@ public final class PacketPipeline {
 			return;
 		}
 		instance = new PacketPipeline();
-		NitriumMod.LOGGER.info("Nitrium network pipeline active (workers={})",
+		Nitrium.LOGGER.info("Nitrium network pipeline active (workers={})",
 				NitriumConfigManager.get().networkWorkerThreads);
 	}
 

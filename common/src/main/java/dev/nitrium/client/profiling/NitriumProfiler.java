@@ -1,7 +1,7 @@
 package dev.nitrium.client.profiling;
 
 import dev.nitrium.config.NitriumConfigManager;
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.client.governor.QualityGovernor;
 import dev.nitrium.client.platform.ClientEvents;
 import dev.nitrium.platform.Platform;
@@ -69,7 +69,7 @@ public final class NitriumProfiler {
 			PerformanceMonitor.get().onFrameEnd();
 		});
 
-		NitriumMod.LOGGER.info(
+		Nitrium.LOGGER.info(
 				"Nitrium profiler active (irisLoaded={}, gpuProfiling={})",
 				irisLoaded,
 				gpuProfilingEnabled

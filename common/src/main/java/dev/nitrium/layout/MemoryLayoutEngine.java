@@ -1,6 +1,6 @@
 package dev.nitrium.layout;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfigManager;
 
 import java.util.HashMap;
@@ -24,7 +24,7 @@ public final class MemoryLayoutEngine {
 			return;
 		}
 		instance = new MemoryLayoutEngine();
-		NitriumMod.LOGGER.info("Nitrium memory layout engine active (bitfields={})",
+		Nitrium.LOGGER.info("Nitrium memory layout engine active (bitfields={})",
 				NitriumConfigManager.get().enableBlockStateBitfields);
 	}
 

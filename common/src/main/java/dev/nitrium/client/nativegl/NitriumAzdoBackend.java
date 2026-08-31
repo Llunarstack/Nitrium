@@ -1,6 +1,6 @@
 package dev.nitrium.client.nativegl;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfigManager;
 import dev.nitrium.memory.NativeResourceCleaner;
 import net.minecraft.client.Minecraft;
@@ -32,7 +32,7 @@ public final class NitriumAzdoBackend implements AutoCloseable {
 		}
 
 		if (!NitriumConfigManager.get().enableAzdoBackend) {
-			NitriumMod.LOGGER.info("Nitrium AZDO backend disabled via config");
+			Nitrium.LOGGER.info("Nitrium AZDO backend disabled via config");
 			return;
 		}
 
@@ -43,7 +43,7 @@ public final class NitriumAzdoBackend implements AutoCloseable {
 	private void setup() {
 		// No GL here: this runs during client init before the GL context is ready. The persistent
 		// buffer and MDI batch are allocated lazily on the render thread via ensureGlResources().
-		NitriumMod.LOGGER.info("Nitrium AZDO backend configured (GL resources allocated on first render use)");
+		Nitrium.LOGGER.info("Nitrium AZDO backend configured (GL resources allocated on first render use)");
 	}
 
 	/**
@@ -59,7 +59,7 @@ public final class NitriumAzdoBackend implements AutoCloseable {
 		}
 
 		if (!PersistentMappedBuffer.isSupported()) {
-			NitriumMod.LOGGER.warn("GL_ARB_buffer_storage unavailable — AZDO falling back to a dynamic buffer");
+			Nitrium.LOGGER.warn("GL_ARB_buffer_storage unavailable — AZDO falling back to a dynamic buffer");
 		}
 
 		long bufferBytes = (long) NitriumConfigManager.get().geometryBufferBudgetMb * 1024L * 1024L;
@@ -73,7 +73,7 @@ public final class NitriumAzdoBackend implements AutoCloseable {
 				indirectBatch.close();
 			}
 		});
-		NitriumMod.LOGGER.info("Nitrium AZDO backend ready (persistent={})", geometryBuffer.isPersistent());
+		Nitrium.LOGGER.info("Nitrium AZDO backend ready (persistent={})", geometryBuffer.isPersistent());
 		return true;
 	}
 
@@ -102,7 +102,7 @@ public final class NitriumAzdoBackend implements AutoCloseable {
 		}
 
 		appliedScale = clamped;
-		NitriumMod.LOGGER.debug("Nitrium AZDO render scale -> {}% ({}x{})",
+		Nitrium.LOGGER.debug("Nitrium AZDO render scale -> {}% ({}x{})",
 				Math.round(clamped * 100.0f), scaledWidth, scaledHeight);
 		return true;
 	}

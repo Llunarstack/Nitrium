@@ -1,6 +1,6 @@
 package dev.nitrium.lighting;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfigManager;
 import dev.nitrium.memory.NitriumWorkerThreads;
 
@@ -60,7 +60,7 @@ public final class AsyncLightWorkerPool {
 			workers.shutdownNow();
 			Thread.currentThread().interrupt();
 		}
-		NitriumMod.LOGGER.debug("Nitrium light worker pool shut down");
+		Nitrium.LOGGER.debug("Nitrium light worker pool shut down");
 	}
 
 	public static AsyncLightWorkerPool create() {

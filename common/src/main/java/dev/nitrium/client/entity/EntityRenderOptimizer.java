@@ -1,6 +1,6 @@
 package dev.nitrium.client.entity;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.client.culling.CullingPipeline;
 import dev.nitrium.client.nativegl.FrustumPlaneExtractor;
 import dev.nitrium.nativecore.NitriumNativeLoader;
@@ -36,7 +36,7 @@ public final class EntityRenderOptimizer {
 		}
 
 		if (!NitriumConfigManager.get().enableEntityOptimization) {
-			NitriumMod.LOGGER.info("Nitrium client entity optimization disabled via config");
+			Nitrium.LOGGER.info("Nitrium client entity optimization disabled via config");
 			return;
 		}
 
@@ -52,7 +52,7 @@ public final class EntityRenderOptimizer {
 		events.worldRenderBeforeEntities(this::onBeforeEntities);
 		events.worldRenderAfterEntities(this::onAfterEntities);
 
-		NitriumMod.LOGGER.info("Nitrium entity render optimizer active (client)");
+		Nitrium.LOGGER.info("Nitrium entity render optimizer active (client)");
 	}
 
 	private void onBeforeEntities() {

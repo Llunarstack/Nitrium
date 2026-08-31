@@ -1,6 +1,6 @@
 package dev.nitrium.client.streaming;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

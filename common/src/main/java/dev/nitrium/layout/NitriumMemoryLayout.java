@@ -1,6 +1,6 @@
 package dev.nitrium.layout;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.compat.ModCompatibility;
 import dev.nitrium.compat.NitriumFeature;
 import dev.nitrium.config.NitriumConfigManager;
@@ -14,11 +14,11 @@ public final class NitriumMemoryLayout {
 
 	public static void init() {
 		if (!NitriumConfigManager.get().enableMemoryLayoutOptimization) {
-			NitriumMod.LOGGER.info("Nitrium memory layout optimization disabled via config");
+			Nitrium.LOGGER.info("Nitrium memory layout optimization disabled via config");
 			return;
 		}
 		if (!ModCompatibility.isActive(NitriumFeature.MEMORY_LAYOUT)) {
-			NitriumMod.LOGGER.info("Nitrium memory layout deferred — {} handles heap compression",
+			Nitrium.LOGGER.info("Nitrium memory layout deferred — {} handles heap compression",
 					ModCompatibility.conflictingMod(NitriumFeature.MEMORY_LAYOUT));
 			return;
 		}

@@ -1,6 +1,6 @@
 package dev.nitrium.itempool;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfigManager;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -21,7 +21,7 @@ public final class ItemXpPoolingEngine {
 			return;
 		}
 		instance = new ItemXpPoolingEngine();
-		NitriumMod.LOGGER.info("Nitrium item/XP pooling active (radius={} blocks)",
+		Nitrium.LOGGER.info("Nitrium item/XP pooling active (radius={} blocks)",
 				NitriumConfigManager.get().itemMergeRadiusBlocks);
 	}
 

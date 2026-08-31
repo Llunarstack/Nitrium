@@ -1,6 +1,6 @@
 package dev.nitrium.client.streaming;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfig;
 import dev.nitrium.config.NitriumConfigManager;
 import dev.nitrium.client.platform.ClientEvents;
@@ -41,7 +41,7 @@ public final class StreamingChunkLoader {
 
 	private void register() {
 		ClientEvents.get().clientTickEnd(this::onClientTick);
-		NitriumMod.LOGGER.info("Nitrium streaming loader active");
+		Nitrium.LOGGER.info("Nitrium streaming loader active");
 	}
 
 	private void onClientTick(Minecraft client) {
@@ -149,7 +149,7 @@ public final class StreamingChunkLoader {
 		try {
 			return AsyncChunkCacheStore.get().readAsync(key).get();
 		} catch (Exception exception) {
-			NitriumMod.LOGGER.warn("Blocking cache read failed for {}", key, exception);
+			Nitrium.LOGGER.warn("Blocking cache read failed for {}", key, exception);
 			return Optional.empty();
 		}
 	}

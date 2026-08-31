@@ -1,6 +1,6 @@
 package dev.nitrium.memory;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.entity.EntityOptimizationEngine;
 import dev.nitrium.itempool.ItemXpPoolingEngine;
 import dev.nitrium.lighting.LightingEngine;
@@ -34,7 +34,7 @@ public final class NitriumLifecycle {
 		events.serverWorldUnload(NitriumLifecycle::onServerWorldUnload);
 		events.serverStopping(NitriumLifecycle::onServerStopping);
 
-		NitriumMod.LOGGER.info("Nitrium lifecycle hooks registered");
+		Nitrium.LOGGER.info("Nitrium lifecycle hooks registered");
 	}
 
 	private static void onServerWorldUnload(MinecraftServer server, ServerLevel level) {
@@ -73,7 +73,7 @@ public final class NitriumLifecycle {
 			storage.onWorldUnload();
 		}
 
-		NitriumMod.LOGGER.debug("Nitrium flushed server caches for {}", level.dimension().identifier());
+		Nitrium.LOGGER.debug("Nitrium flushed server caches for {}", level.dimension().identifier());
 	}
 
 	private static void onServerStopping(MinecraftServer server) {
@@ -98,6 +98,6 @@ public final class NitriumLifecycle {
 		}
 
 		NativeBootstrap.shutdown();
-		NitriumMod.LOGGER.info("Nitrium server shutdown complete");
+		Nitrium.LOGGER.info("Nitrium server shutdown complete");
 	}
 }

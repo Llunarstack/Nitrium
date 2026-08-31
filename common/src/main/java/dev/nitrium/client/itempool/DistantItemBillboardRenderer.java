@@ -1,6 +1,6 @@
 package dev.nitrium.client.itempool;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfigManager;
 
 import java.util.HashSet;

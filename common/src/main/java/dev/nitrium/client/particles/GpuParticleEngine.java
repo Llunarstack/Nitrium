@@ -1,6 +1,6 @@
 package dev.nitrium.client.particles;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfigManager;
 import dev.nitrium.memory.NativeResourceCleaner;
 import dev.nitrium.client.platform.ClientEvents;
@@ -39,7 +39,7 @@ public final class GpuParticleEngine {
 		events.worldRenderBeforeDebug(this::simulateAndCull);
 		events.worldRenderAfterEntities(this::drawParticles);
 
-		NitriumMod.LOGGER.info("Nitrium GPU particle engine active (max={})", max);
+		Nitrium.LOGGER.info("Nitrium GPU particle engine active (max={})", max);
 	}
 
 	private void simulateAndCull() {

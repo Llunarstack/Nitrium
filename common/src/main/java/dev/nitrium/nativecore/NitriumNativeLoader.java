@@ -1,6 +1,6 @@
 package dev.nitrium.nativecore;
 
-import dev.nitrium.NitriumMod;
+import dev.nitrium.Nitrium;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,15 +27,15 @@ public final class NitriumNativeLoader {
 		try {
 			System.loadLibrary("nitrium_native");
 			available = true;
-			NitriumMod.LOGGER.info("Nitrium native core loaded from system library path");
+			Nitrium.LOGGER.info("Nitrium native core loaded from system library path");
 		} catch (UnsatisfiedLinkError systemPathFailure) {
 			available = extractAndLoad();
 		}
 
 		if (available) {
-			NitriumMod.LOGGER.info("Nitrium native core {} (AVX2={})", NitriumNative.version(), NitriumNative.hasAvx2());
+			Nitrium.LOGGER.info("Nitrium native core {} (AVX2={})", NitriumNative.version(), NitriumNative.hasAvx2());
 		} else {
-			NitriumMod.LOGGER.warn("Nitrium native core unavailable — running Java fallbacks");
+			Nitrium.LOGGER.warn("Nitrium native core unavailable — running Java fallbacks");
 		}
 
 		return available;
@@ -80,7 +80,7 @@ public final class NitriumNativeLoader {
 			System.load(lib.toAbsolutePath().toString());
 			return true;
 		} catch (IOException | UnsatisfiedLinkError exception) {
-			NitriumMod.LOGGER.debug("Failed to extract native library", exception);
+			Nitrium.LOGGER.debug("Failed to extract native library", exception);
 			return false;
 		}
 	}
