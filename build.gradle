@@ -1,140 +1,50 @@
 plugins {
-	id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
-	id 'maven-publish'
+	id "architectury-plugin" version "${architectury_plugin_version}"
+	id "dev.architectury.loom" version "${architectury_loom_version}" apply false
+	id "com.gradleup.shadow" version "8.3.6" apply false
 }
 
-repositories {
-	// Add repositories to retrieve artifacts from in here.
-	// You should only use this when depending on other mods because
-	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
-	// for more information about repositories.
+architectury {
+	minecraft = project.minecraft_version
 }
 
-loom {
-	splitEnvironmentSourceSets()
+subprojects {
+	apply plugin: "dev.architectury.loom"
 
-	mods {
-		"nitrium" {
-			sourceSet sourceSets.main
-			sourceSet sourceSets.client
-		}
+	loom {
+		silentMojangMappingsLicense()
+	}
+
+	dependencies {
+		minecraft "com.mojang:minecraft:${project.minecraft_version}"
+		mappings loom.officialMojangMappings()
 	}
 }
 
-dependencies {
-	// To change the versions see the gradle.properties file
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings loom.officialMojangMappings()
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+allprojects {
+	apply plugin: "java"
+	apply plugin: "architectury-plugin"
 
-	// Fabric API. This is technically optional, but you probably want it anyway.
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-}
-
-processResources {
-	def version = project.version
-	inputs.property "version", version
-
-	filesMatching("fabric.mod.json") {
-		expand "version": version
-	}
-}
-
-tasks.withType(JavaCompile).configureEach {
-	it.options.release = 21
-}
-
-java {
-	withSourcesJar()
-
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
-}
-
-// --- Native C++ core (optional) ---
-tasks.register('configureNative', Exec) {
-	group = 'nitrium'
-	description = 'Configure nitrium_native CMake project'
-	workingDir layout.projectDirectory.dir('native')
-
-	def isWindows = System.getProperty('os.name').toLowerCase().contains('win')
-	if (isWindows) {
-		commandLine 'cmake', '-B', 'build', '-A', 'x64'
-	} else {
-		commandLine 'cmake', '-B', 'build', '-DCMAKE_BUILD_TYPE=Release'
-	}
-}
-
-tasks.register('buildNative', Exec) {
-	group = 'nitrium'
-	description = 'Compile nitrium_native via CMake (requires CMake + C++20 compiler)'
-	dependsOn configureNative
-	workingDir layout.projectDirectory.dir('native')
-
-	def isWindows = System.getProperty('os.name').toLowerCase().contains('win')
-	if (isWindows) {
-		commandLine 'cmake', '--build', 'build', '--config', 'Release'
-	} else {
-		commandLine 'cmake', '--build', 'build'
-	}
-}
-
-tasks.register('copyNative', Copy) {
-	group = 'nitrium'
-	description = 'Copy built native library into generated resources for JAR packaging'
-	onlyIf {
-		def isWindows = System.getProperty('os.name').toLowerCase().contains('win')
-		isWindows
-				? file('native/build/Release/nitrium_native.dll').exists()
-				: file('native/build/libnitrium_native.so').exists()
+	base {
+		archivesName = "${project.archives_base_name}-${project.name}"
 	}
 
-	def isWindows = System.getProperty('os.name').toLowerCase().contains('win')
-	if (isWindows) {
-		from layout.projectDirectory.dir('native/build/Release')
-		include 'nitrium_native.dll'
-		into layout.buildDirectory.dir('generated/native-resources/native/windows-amd64')
-	} else {
-		from layout.projectDirectory.dir('native/build')
-		include 'libnitrium_native.so'
-		into layout.buildDirectory.dir('generated/native-resources/native/linux-amd64')
-	}
-}
+	version = project.mod_version
+	group = project.maven_group
 
-sourceSets.main.resources.srcDir layout.buildDirectory.dir('generated/native-resources')
-
-tasks.named('processResources') {
-	dependsOn copyNative
-}
-
-tasks.named('sourcesJar', Jar) {
-	dependsOn copyNative
-	exclude('native/**', '**/*.dll', '**/*.so', '**/*.dylib')
-}
-
-jar {
-	def projectName = project.name
-	inputs.property "projectName", projectName
-
-	from("LICENSE") {
-		rename { "${it}_$projectName"}
-	}
-}
-
-// configure the maven publication
-publishing {
-	publications {
-		create("mavenJava", MavenPublication) {
-			from components.java
-		}
-	}
-
-	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
 	repositories {
-		// Add repositories to publish to here.
-		// Notice: This block does NOT have the same function as the block in the top level.
-		// The repositories here will be used for publishing your artifact, not for
-		// retrieving dependencies.
+		maven { url "https://maven.neoforged.net/releases/" }
+		maven { url "https://maven.minecraftforge.net/" }
+	}
+
+	tasks.withType(JavaCompile).configureEach {
+		options.encoding = "UTF-8"
+		options.release = 21
+	}
+
+	java {
+		withSourcesJar()
+		sourceCompatibility = JavaVersion.VERSION_21
+		targetCompatibility = JavaVersion.VERSION_21
 	}
 }

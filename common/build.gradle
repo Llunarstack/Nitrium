@@ -1,0 +1,52 @@
+architectury {
+	common(rootProject.enabled_platforms.split(","))
+}
+
+dependencies {
+	// fabric-loader supplies the Mixin annotations used by common mixins at compile time.
+	// Architectury keeps it off the shipped jars.
+	modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
+}
+
+// --- Native C++ core (optional; requires CMake + a C++20 compiler) ---
+def nativeDir = rootProject.layout.projectDirectory.dir("native")
+def isWindows = System.getProperty("os.name").toLowerCase().contains("win")
+
+tasks.register("configureNative", Exec) {
+	group = "nitrium"
+	workingDir nativeDir
+	commandLine isWindows ? ["cmake", "-B", "build", "-A", "x64"]
+			: ["cmake", "-B", "build", "-DCMAKE_BUILD_TYPE=Release"]
+}
+
+tasks.register("buildNative", Exec) {
+	group = "nitrium"
+	dependsOn "configureNative"
+	workingDir nativeDir
+	commandLine isWindows ? ["cmake", "--build", "build", "--config", "Release"]
+			: ["cmake", "--build", "build"]
+}
+
+tasks.register("copyNative", Copy) {
+	group = "nitrium"
+	onlyIf {
+		isWindows
+				? nativeDir.file("build/Release/nitrium_native.dll").asFile.exists()
+				: nativeDir.file("build/libnitrium_native.so").asFile.exists()
+	}
+	if (isWindows) {
+		from nativeDir.dir("build/Release")
+		include "nitrium_native.dll"
+		into layout.buildDirectory.dir("generated/native-resources/native/windows-amd64")
+	} else {
+		from nativeDir.dir("build")
+		include "libnitrium_native.so"
+		into layout.buildDirectory.dir("generated/native-resources/native/linux-amd64")
+	}
+}
+
+sourceSets.main.resources.srcDir layout.buildDirectory.dir("generated/native-resources")
+
+tasks.named("processResources") {
+	dependsOn "copyNative"
+}

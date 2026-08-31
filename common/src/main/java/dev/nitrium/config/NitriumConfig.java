@@ -40,8 +40,12 @@ public final class NitriumConfig {
 
 	// --- Adaptive render distance (FPS driven) ---
 
-	/** Automatically grow/shrink Minecraft render distance to hold the target FPS. */
-	public boolean enableAdaptiveRenderDistance = true;
+	/**
+	 * Automatically grow/shrink Minecraft render distance to hold the target FPS. Off by default:
+	 * every change forces a chunk reload, which is visually disruptive when FPS sits near a
+	 * threshold (e.g. under heavy shaders).
+	 */
+	public boolean enableAdaptiveRenderDistance = false;
 
 	/** Lower bound for adaptive render distance (chunks). */
 	public int adaptiveMinRenderDistanceChunks = 8;
