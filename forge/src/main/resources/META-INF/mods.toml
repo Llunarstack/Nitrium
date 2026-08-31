@@ -1,0 +1,29 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "MIT"
+issueTrackerURL = "https://github.com/Llunarstack/Nitrium/issues"
+
+[[mods]]
+modId = "nitrium"
+version = "${version}"
+displayName = "Nitrium"
+authors = "Snappy_YT"
+logoFile = "assets/nitrium/icon.png"
+description = '''
+A performance mod with an adaptive quality governor, entity render culling, and server-side
+tick/worldgen/lighting optimizations. Complements Sodium/Embeddium, Iris/Oculus and friends.
+'''
+
+[[dependencies.nitrium]]
+modId = "forge"
+mandatory = true
+versionRange = "[61,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.nitrium]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.21.11,)"
+ordering = "NONE"
+side = "BOTH"

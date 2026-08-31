@@ -50,3 +50,10 @@ sourceSets.main.resources.srcDir layout.buildDirectory.dir("generated/native-res
 tasks.named("processResources") {
 	dependsOn "copyNative"
 }
+
+// The native binaries live under generated resources; keep them out of the sources jar and make it
+// wait for copyNative so the two don't race under parallel builds.
+tasks.named("sourcesJar") {
+	dependsOn "copyNative"
+	exclude "native/**", "**/*.dll", "**/*.so", "**/*.dylib"
+}
