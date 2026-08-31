@@ -2,7 +2,7 @@ package dev.nitrium.lighting;
 
 import dev.nitrium.NitriumMod;
 import dev.nitrium.config.NitriumConfigManager;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import dev.nitrium.platform.ServerEvents;
 import net.minecraft.core.BlockPos;
 
 import java.util.HashMap;
@@ -33,8 +33,9 @@ public final class LightingEngine {
 	}
 
 	private void register() {
-		ServerTickEvents.START_SERVER_TICK.register(server -> onServerTickStart(server.getTickCount()));
-		ServerTickEvents.END_SERVER_TICK.register(server -> {
+		ServerEvents events = ServerEvents.get();
+		events.serverTickStart(server -> onServerTickStart(server.getTickCount()));
+		events.serverTickEnd(server -> {
 			if (!NitriumConfigManager.get().enableLightUpdateBatching) {
 				return;
 			}

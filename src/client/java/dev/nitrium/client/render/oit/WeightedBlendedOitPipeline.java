@@ -2,7 +2,7 @@ package dev.nitrium.client.render.oit;
 
 import dev.nitrium.NitriumMod;
 import dev.nitrium.memory.NativeResourceCleaner;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
+import dev.nitrium.client.platform.ClientEvents;
 import net.minecraft.client.Minecraft;
 
 import java.lang.ref.Cleaner;
@@ -33,8 +33,9 @@ public final class WeightedBlendedOitPipeline {
 	}
 
 	private void register() {
-		WorldRenderEvents.AFTER_ENTITIES.register(context -> beginTranslucentPass());
-		WorldRenderEvents.END_MAIN.register(context -> endTranslucentPass());
+		ClientEvents events = ClientEvents.get();
+		events.worldRenderAfterEntities(this::beginTranslucentPass);
+		events.worldRenderEnd(this::endTranslucentPass);
 
 		NitriumMod.LOGGER.info("Nitrium OIT translucency pipeline active (weighted blended)");
 	}

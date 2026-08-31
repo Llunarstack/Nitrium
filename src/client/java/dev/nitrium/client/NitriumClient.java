@@ -12,6 +12,8 @@ import dev.nitrium.client.particles.NitriumParticles;
 import dev.nitrium.client.render.oit.NitriumOit;
 import dev.nitrium.client.streaming.NitriumStreaming;
 import dev.nitrium.config.NitriumConfigManager;
+import dev.nitrium.client.fabric.FabricClientEvents;
+import dev.nitrium.client.platform.ClientEvents;
 import dev.nitrium.client.profiling.NitriumProfiler;
 import dev.nitrium.client.profiling.ProfilingDebugOverlay;
 import net.fabricmc.api.ClientModInitializer;
@@ -19,6 +21,8 @@ import net.fabricmc.api.ClientModInitializer;
 public class NitriumClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
+		ClientEvents.install(new FabricClientEvents());
+
 		NitriumConfigManager.load();
 		NitriumProfiler.init();
 		ProfilingDebugOverlay.register();

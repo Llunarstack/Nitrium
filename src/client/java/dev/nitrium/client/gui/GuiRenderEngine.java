@@ -2,7 +2,7 @@ package dev.nitrium.client.gui;
 
 import dev.nitrium.NitriumMod;
 import dev.nitrium.memory.NativeResourceCleaner;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import dev.nitrium.client.platform.ClientEvents;
 import net.minecraft.client.Minecraft;
 
 import java.lang.ref.Cleaner;
@@ -34,7 +34,7 @@ public final class GuiRenderEngine {
 	private void register() {
 		fontAtlas = new SdfFontAtlas(2048);
 
-		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+		ClientEvents.get().clientTickEnd(client -> {
 			if (client.player == null) {
 				return;
 			}

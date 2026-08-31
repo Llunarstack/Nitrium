@@ -7,7 +7,7 @@ import dev.nitrium.nativecore.NitriumNativeLoader;
 import dev.nitrium.nativecore.SimdFrustumCuller;
 import dev.nitrium.config.NitriumConfigManager;
 import dev.nitrium.entity.EntityOptimizationStats;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
+import dev.nitrium.client.platform.ClientEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
@@ -48,8 +48,9 @@ public final class EntityRenderOptimizer {
 		EntityTransformBuffer.get().init(4096);
 		GpuEntitySkinningCompute.get().init();
 
-		WorldRenderEvents.BEFORE_ENTITIES.register(context -> onBeforeEntities());
-		WorldRenderEvents.AFTER_ENTITIES.register(context -> onAfterEntities());
+		ClientEvents events = ClientEvents.get();
+		events.worldRenderBeforeEntities(this::onBeforeEntities);
+		events.worldRenderAfterEntities(this::onAfterEntities);
 
 		NitriumMod.LOGGER.info("Nitrium entity render optimizer active (client)");
 	}

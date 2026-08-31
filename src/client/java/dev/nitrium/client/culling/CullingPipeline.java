@@ -9,8 +9,7 @@ import dev.nitrium.client.culling.terrain.SectionCullEvaluator;
 import dev.nitrium.client.streaming.SectionKey;
 import dev.nitrium.config.NitriumConfig;
 import dev.nitrium.config.NitriumConfigManager;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
+import dev.nitrium.client.platform.ClientEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.culling.Frustum;
@@ -58,15 +57,16 @@ public final class CullingPipeline {
 			return;
 		}
 
-		WorldRenderEvents.START_MAIN.register(context -> onWorldRenderStart());
-		WorldRenderEvents.BEFORE_ENTITIES.register(context -> {
+		ClientEvents events = ClientEvents.get();
+		events.worldRenderStart(this::onWorldRenderStart);
+		events.worldRenderBeforeEntities(() -> {
 			Minecraft client = Minecraft.getInstance();
 			Vec3 cameraPos = client.gameRenderer.getMainCamera().position();
 			onBeforeEntities(cameraPos);
 		});
-		WorldRenderEvents.END_MAIN.register(context -> onWorldRenderEnd());
+		events.worldRenderEnd(this::onWorldRenderEnd);
 
-		ClientTickEvents.END_CLIENT_TICK.register(client -> onClientTickEnd(client));
+		events.clientTickEnd(this::onClientTickEnd);
 
 		NitriumMod.LOGGER.info("Nitrium culling pipeline active");
 	}

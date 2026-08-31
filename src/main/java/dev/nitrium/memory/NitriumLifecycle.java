@@ -10,8 +10,7 @@ import dev.nitrium.redstone.RedstoneOptimizationEngine;
 import dev.nitrium.worldgen.WorldgenOptimizationEngine;
 import dev.nitrium.storage.AsyncChunkStorageEngine;
 import dev.nitrium.nativecore.NativeBootstrap;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
+import dev.nitrium.platform.ServerEvents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 
@@ -31,8 +30,9 @@ public final class NitriumLifecycle {
 
 		initialized = true;
 
-		ServerWorldEvents.UNLOAD.register(NitriumLifecycle::onServerWorldUnload);
-		ServerLifecycleEvents.SERVER_STOPPING.register(NitriumLifecycle::onServerStopping);
+		ServerEvents events = ServerEvents.get();
+		events.serverWorldUnload(NitriumLifecycle::onServerWorldUnload);
+		events.serverStopping(NitriumLifecycle::onServerStopping);
 
 		NitriumMod.LOGGER.info("Nitrium lifecycle hooks registered");
 	}

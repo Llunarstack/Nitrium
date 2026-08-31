@@ -6,8 +6,7 @@ import dev.nitrium.client.entity.EntityRenderOptimizer;
 import dev.nitrium.client.governor.QualityGovernor;
 import dev.nitrium.config.HardwareProfile;
 import dev.nitrium.config.NitriumConfigManager;
-import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+import dev.nitrium.client.platform.ClientEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -21,8 +20,7 @@ public final class ProfilingDebugOverlay {
 	}
 
 	public static void register() {
-		HudElementRegistry.attachElementBefore(
-				VanillaHudElements.DEMO_TIMER,
+		ClientEvents.get().hud(
 				Identifier.fromNamespaceAndPath(NitriumMod.MOD_ID, "profiling"),
 				ProfilingDebugOverlay::render
 		);

@@ -13,9 +13,7 @@ import dev.nitrium.client.nativegl.NitriumAzdoBackend;
 import dev.nitrium.client.streaming.AsyncChunkCacheStore;
 import dev.nitrium.client.streaming.StreamingChunkLoader;
 import dev.nitrium.nativecore.NativeBootstrap;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
-import net.minecraft.client.Minecraft;
+import dev.nitrium.client.platform.ClientEvents;
 import net.minecraft.client.multiplayer.ClientLevel;
 
 /**
@@ -35,13 +33,14 @@ public final class NitriumClientLifecycle {
 
 		initialized = true;
 
-		ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register(NitriumClientLifecycle::onClientWorldChange);
-		ClientLifecycleEvents.CLIENT_STOPPING.register(client -> onClientStopping());
+		ClientEvents events = ClientEvents.get();
+		events.clientWorldChanged(NitriumClientLifecycle::onClientWorldChange);
+		events.clientStopping(NitriumClientLifecycle::onClientStopping);
 
 		NitriumMod.LOGGER.info("Nitrium client lifecycle hooks registered");
 	}
 
-	private static void onClientWorldChange(Minecraft client, ClientLevel newWorld) {
+	private static void onClientWorldChange(ClientLevel newWorld) {
 		ClientLevel previous = activeWorld;
 		activeWorld = newWorld;
 		if (previous != null) {

@@ -3,9 +3,7 @@ package dev.nitrium.compat;
 import dev.nitrium.NitriumMod;
 import dev.nitrium.config.NitriumConfig;
 import dev.nitrium.config.NitriumConfigManager;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
-import net.fabricmc.loader.api.metadata.ModMetadata;
+import dev.nitrium.platform.Platform;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -58,11 +56,10 @@ public final class ModCompatibility {
 			return;
 		}
 
-		FabricLoader loader = FabricLoader.getInstance();
 		for (var entry : KNOWN_CONFLICTS.entrySet()) {
 			NitriumFeature feature = entry.getKey();
 			for (String modId : entry.getValue()) {
-				if (loader.isModLoaded(modId)) {
+				if (Platform.isModLoaded(modId)) {
 					defer(feature, modId);
 					break;
 				}
@@ -105,11 +102,11 @@ public final class ModCompatibility {
 	}
 
 	public static boolean isSodiumLoaded() {
-		return FabricLoader.getInstance().isModLoaded("sodium");
+		return Platform.isModLoaded("sodium");
 	}
 
 	public static boolean isIrisLoaded() {
-		return FabricLoader.getInstance().isModLoaded("iris");
+		return Platform.isModLoaded("iris");
 	}
 
 	private static boolean isConfigEnabled(NitriumFeature feature, NitriumConfig config) {
@@ -158,13 +155,5 @@ public final class ModCompatibility {
 			NitriumMod.LOGGER.info("Nitrium complements: {} — GPU culling/streaming remain active",
 					String.join(", ", complements));
 		}
-	}
-
-	public static String modVersion(String modId) {
-		return FabricLoader.getInstance().getModContainer(modId)
-				.map(ModContainer::getMetadata)
-				.map(ModMetadata::getVersion)
-				.map(Object::toString)
-				.orElse("unknown");
 	}
 }

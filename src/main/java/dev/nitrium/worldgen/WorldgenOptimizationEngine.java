@@ -6,7 +6,7 @@ import dev.nitrium.worldgen.noise.CoarseDensityPipeline;
 import dev.nitrium.worldgen.taskgraph.ChunkGenTask;
 import dev.nitrium.worldgen.taskgraph.ChunkGenTaskType;
 import dev.nitrium.worldgen.taskgraph.WorldgenTaskScheduler;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import dev.nitrium.platform.ServerEvents;
 import net.minecraft.world.level.ChunkPos;
 
 /**
@@ -39,7 +39,7 @@ public final class WorldgenOptimizationEngine {
 	}
 
 	private void register() {
-		ServerTickEvents.END_SERVER_TICK.register(server -> {
+		ServerEvents.get().serverTickEnd(server -> {
 			if (server.getTickCount() - lastStatsLogTick >= 6000) {
 				lastStatsLogTick = server.getTickCount();
 				logStats();

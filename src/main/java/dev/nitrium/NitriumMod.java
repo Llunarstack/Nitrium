@@ -2,6 +2,8 @@ package dev.nitrium;
 
 import dev.nitrium.compat.ModCompatibility;
 import dev.nitrium.config.NitriumConfigManager;
+import dev.nitrium.fabric.FabricServerEvents;
+import dev.nitrium.platform.ServerEvents;
 import dev.nitrium.itempool.NitriumItemPooling;
 import dev.nitrium.lighting.NitriumLighting;
 import dev.nitrium.layout.NitriumMemoryLayout;
@@ -21,6 +23,8 @@ public class NitriumMod implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		ServerEvents.install(new FabricServerEvents());
+
 		NitriumConfigManager.load();
 		ModCompatibility.init();
 		// Load the native core before subsystems that probe native availability at init

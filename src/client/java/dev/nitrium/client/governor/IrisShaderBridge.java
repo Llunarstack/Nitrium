@@ -1,7 +1,7 @@
 package dev.nitrium.client.governor;
 
 import dev.nitrium.NitriumMod;
-import net.fabricmc.loader.api.FabricLoader;
+import dev.nitrium.platform.Platform;
 
 import java.lang.reflect.Method;
 
@@ -33,7 +33,7 @@ public final class IrisShaderBridge {
 		}
 		resolved = true;
 
-		if (!FabricLoader.getInstance().isModLoaded("iris")) {
+		if (!Platform.isModLoaded("iris")) {
 			return;
 		}
 

@@ -3,7 +3,7 @@ package dev.nitrium.client.particles;
 import dev.nitrium.NitriumMod;
 import dev.nitrium.config.NitriumConfigManager;
 import dev.nitrium.memory.NativeResourceCleaner;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
+import dev.nitrium.client.platform.ClientEvents;
 
 import java.lang.ref.Cleaner;
 
@@ -35,8 +35,9 @@ public final class GpuParticleEngine {
 		ssboPool = new ParticleSsboPool(max);
 		indirectDraw = new ParticleIndirectDraw();
 
-		WorldRenderEvents.BEFORE_DEBUG_RENDER.register(context -> simulateAndCull());
-		WorldRenderEvents.AFTER_ENTITIES.register(context -> drawParticles());
+		ClientEvents events = ClientEvents.get();
+		events.worldRenderBeforeDebug(this::simulateAndCull);
+		events.worldRenderAfterEntities(this::drawParticles);
 
 		NitriumMod.LOGGER.info("Nitrium GPU particle engine active (max={})", max);
 	}

@@ -4,7 +4,7 @@ import dev.nitrium.NitriumMod;
 import dev.nitrium.config.NitriumConfigManager;
 import dev.nitrium.memory.NitriumWorkerThreads;
 import dev.nitrium.nativecore.NativeChunkIo;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import dev.nitrium.platform.ServerEvents;
 import net.minecraft.world.level.ChunkPos;
 
 import java.util.concurrent.ExecutorService;
@@ -38,7 +38,7 @@ public final class AsyncChunkStorageEngine {
 	private void register() {
 		nativeRing = NativeChunkIo.init();
 
-		ServerTickEvents.END_SERVER_TICK.register(server -> drainQueue());
+		ServerEvents.get().serverTickEnd(server -> drainQueue());
 
 		NitriumMod.LOGGER.info("Nitrium async chunk storage active (nativeRing={}, writers={})",
 				nativeRing, NitriumConfigManager.get().maxConcurrentChunkWrites);

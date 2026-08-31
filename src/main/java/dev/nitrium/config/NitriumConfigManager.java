@@ -3,7 +3,7 @@ package dev.nitrium.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.nitrium.NitriumMod;
-import net.fabricmc.loader.api.FabricLoader;
+import dev.nitrium.platform.Platform;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -28,7 +28,7 @@ public final class NitriumConfigManager {
 
 	public static Path path() {
 		if (configPath == null) {
-			configPath = FabricLoader.getInstance().getConfigDir().resolve(NitriumMod.MOD_ID + ".json");
+			configPath = Platform.configDir().resolve(NitriumMod.MOD_ID + ".json");
 		}
 		return configPath;
 	}

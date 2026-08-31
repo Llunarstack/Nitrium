@@ -3,7 +3,7 @@ package dev.nitrium.client.streaming;
 import dev.nitrium.NitriumMod;
 import dev.nitrium.config.NitriumConfig;
 import dev.nitrium.config.NitriumConfigManager;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import dev.nitrium.client.platform.ClientEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.Identifier;
@@ -40,7 +40,7 @@ public final class StreamingChunkLoader {
 	}
 
 	private void register() {
-		ClientTickEvents.END_CLIENT_TICK.register(client -> onClientTick(client));
+		ClientEvents.get().clientTickEnd(this::onClientTick);
 		NitriumMod.LOGGER.info("Nitrium streaming loader active");
 	}
 

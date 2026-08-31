@@ -3,7 +3,7 @@ package dev.nitrium.client.streaming;
 import dev.nitrium.NitriumMod;
 import dev.nitrium.config.NitriumConfigManager;
 import dev.nitrium.memory.NitriumWorkerThreads;
-import net.fabricmc.loader.api.FabricLoader;
+import dev.nitrium.platform.Platform;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +37,7 @@ public final class AsyncChunkCacheStore {
 			return;
 		}
 
-		Path root = FabricLoader.getInstance().getGameDir().resolve("nitrium").resolve("cache");
+		Path root = Platform.gameDir().resolve("nitrium").resolve("cache");
 		instance = new AsyncChunkCacheStore(root);
 		NitriumMod.LOGGER.info("Nitrium section cache root: {}", root.toAbsolutePath());
 	}

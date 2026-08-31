@@ -4,7 +4,7 @@ import dev.nitrium.NitriumMod;
 import dev.nitrium.compat.ModCompatibility;
 import dev.nitrium.compat.NitriumFeature;
 import dev.nitrium.config.NitriumConfigManager;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import dev.nitrium.platform.ServerEvents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -52,12 +52,12 @@ public final class EntityOptimizationEngine {
 	}
 
 	private void register() {
-		ServerTickEvents.START_SERVER_TICK.register(server -> {
+		ServerEvents events = ServerEvents.get();
+		events.serverTickStart(server -> {
 			worldTick++;
 			tickDecisions.clear();
 		});
-
-		ServerTickEvents.START_WORLD_TICK.register(this::onWorldTickStart);
+		events.serverWorldTickStart(this::onWorldTickStart);
 		NitriumMod.LOGGER.info("Nitrium entity optimization engine active (server)");
 	}
 

@@ -3,7 +3,7 @@ package dev.nitrium.client.audio;
 import dev.nitrium.NitriumMod;
 import dev.nitrium.config.NitriumConfigManager;
 import dev.nitrium.memory.NitriumWorkerThreads;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import dev.nitrium.client.platform.ClientEvents;
 import net.minecraft.core.BlockPos;
 
 import java.util.Map;
@@ -38,7 +38,7 @@ public final class AsyncAudioOcclusionEngine {
 	}
 
 	private void register() {
-		ClientTickEvents.END_CLIENT_TICK.register(client -> cache.clear());
+		ClientEvents.get().clientTickEnd(client -> cache.clear());
 
 		NitriumMod.LOGGER.info("Nitrium async audio occlusion active (voxel={} blocks, workers={})",
 				NitriumConfigManager.get().audioVoxelSizeBlocks,

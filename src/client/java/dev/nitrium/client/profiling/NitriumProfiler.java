@@ -3,9 +3,8 @@ package dev.nitrium.client.profiling;
 import dev.nitrium.config.NitriumConfigManager;
 import dev.nitrium.NitriumMod;
 import dev.nitrium.client.governor.QualityGovernor;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
-import net.fabricmc.loader.api.FabricLoader;
+import dev.nitrium.client.platform.ClientEvents;
+import dev.nitrium.platform.Platform;
 import net.minecraft.client.Minecraft;
 
 /**
@@ -32,20 +31,22 @@ public final class NitriumProfiler {
 	}
 
 	private void register() {
-		irisLoaded = FabricLoader.getInstance().isModLoaded("iris");
+		irisLoaded = Platform.isModLoaded("iris");
 		gpuProfilingEnabled = NitriumConfigManager.get().enableGpuProfiling;
 
-		ClientTickEvents.START_CLIENT_TICK.register(client -> {
+		ClientEvents events = ClientEvents.get();
+
+		events.clientTickStart(client -> {
 			PerformanceMonitor.get().onFrameStart();
 			PerformanceMonitor.get().onClientTickStart();
 		});
 
-		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+		events.clientTickEnd(client -> {
 			PerformanceMonitor.get().onClientTickEnd();
 			QualityGovernor.get().onClientTick();
 		});
 
-		WorldRenderEvents.START_MAIN.register(context -> {
+		events.worldRenderStart(() -> {
 			if (!gpuProbed) {
 				GpuCapabilities.probe();
 				gpuProbed = true;
@@ -57,7 +58,7 @@ public final class NitriumProfiler {
 			}
 		});
 
-		WorldRenderEvents.END_MAIN.register(context -> {
+		events.worldRenderEnd(() -> {
 			if (gpuProfilingEnabled) {
 				worldRenderGpuQuery.end();
 				long gpuNs = worldRenderGpuQuery.pollNanoseconds();
