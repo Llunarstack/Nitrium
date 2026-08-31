@@ -1,0 +1,26 @@
+{
+	"required": true,
+	"package": "dev.nitrium.mixin",
+	"plugin": "dev.nitrium.compat.NitriumMixinPlugin",
+	"compatibilityLevel": "JAVA_21",
+	"priority": 900,
+	"mixins": [
+		"EntityTickThrottleMixin",
+		"LivingEntityAiThrottleMixin",
+		"ChunkGenerationTaskMixin",
+		"ThreadedLevelLightEngineMixin",
+		"HopperBlockEntityMixin",
+		"AbstractFurnaceBlockEntityMixin",
+		"ExperienceOrbMixin",
+		"ItemEntityMixin",
+		"RedStoneWireBlockMixin",
+		"ExperienceOrbInvoker",
+		"ItemEntityInvoker"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

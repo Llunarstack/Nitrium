@@ -1,0 +1,14 @@
+{
+	"required": true,
+	"package": "dev.nitrium.client.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"client": [
+		"EntityRenderDistanceCullMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

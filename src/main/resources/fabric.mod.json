@@ -1,0 +1,50 @@
+{
+	"schemaVersion": 1,
+	"id": "nitrium",
+	"version": "${version}",
+	"name": "Nitrium",
+	"description": "A performance mod for 1.21.11 with an adaptive quality governor, entity render culling, and server-side tick/worldgen/lighting optimizations. Complements Sodium, Iris and Lithium.",
+	"authors": [
+		"Snappy_YT"
+	],
+	"contact": {
+		"homepage": "https://github.com/Llunarstack/Nitrium",
+		"sources": "https://github.com/Llunarstack/Nitrium",
+		"issues": "https://github.com/Llunarstack/Nitrium/issues"
+	},
+	"license": "MIT",
+	"icon": "assets/nitrium/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"dev.nitrium.NitriumMod"
+		],
+		"client": [
+			"dev.nitrium.client.NitriumClient"
+		]
+	},
+	"mixins": [
+		"nitrium.mixins.json",
+		{
+			"config": "nitrium.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"iris": "Shader packs — Nitrium's governor and culling complement Iris",
+		"sodium": "Client rendering — Nitrium GPU culling and streaming complement Sodium",
+		"lithium": "Server optimizations — Nitrium defers overlapping tick/light/hopper patches",
+		"starlight": "Lighting — Nitrium defers its lighting engine when Starlight is present",
+		"c2me": "Chunk generation — Nitrium defers worldgen task graph when C2ME is present",
+		"clumps": "XP merging — Nitrium defers item/XP pooling when Clumps is present",
+		"krypton": "Networking — Nitrium defers packet pipeline when Krypton is present",
+		"ferritecore": "Memory — Nitrium defers SoA layout when FerriteCore is present",
+		"alternate-current": "Redstone — Nitrium defers topological wire solver when present"
+	}
+}
