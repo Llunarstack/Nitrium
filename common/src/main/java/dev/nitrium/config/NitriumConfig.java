@@ -90,8 +90,13 @@ public final class NitriumConfig {
 
 	// --- Extreme render distance / streaming pipeline ---
 
-	/** Enable client-side binary section disk cache (Bobby-style, Nitrium format). */
-	public boolean enableSectionDiskCache = true;
+	/**
+	 * Client-side binary section disk cache (Bobby-style). Off by default: it snapshots a full 16³
+	 * section and queues a disk write on every block change, but nothing reads the cache back for
+	 * rendering yet — so it only adds per-block CPU and disk churn. Re-enable once the cache feeds
+	 * extended-distance rendering.
+	 */
+	public boolean enableSectionDiskCache = false;
 
 	/** Client render distance extension beyond server view distance (blocks). 0 = disabled. */
 	public int extendedRenderDistanceBlocks = 32;
