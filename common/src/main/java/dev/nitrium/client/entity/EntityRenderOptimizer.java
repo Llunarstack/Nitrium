@@ -62,8 +62,15 @@ public final class EntityRenderOptimizer {
 	private void onBeforeEntities() {
 		frameIndex++;
 		clientStats.reset();
-		instanceBatch.clear();
 		EntityRenderCuller.get().resetFrame();
+
+		// The entity list, SIMD cull mask and instance batch below feed only the GPU-instanced proxy
+		// draw. Skip all of that per-frame work unless it is actually enabled — the real entity
+		// distance culling (EntityRenderDistanceCullMixin) does not depend on any of it.
+		if (!NitriumConfigManager.get().enableGpuEntityInstancing) {
+			return;
+		}
+		instanceBatch.clear();
 
 		Minecraft client = Minecraft.getInstance();
 		ClientLevel level = client.level;

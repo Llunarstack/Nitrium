@@ -151,7 +151,15 @@ public final class NitriumConfig {
 	public int parallelTickWorkerThreads = 4;
 
 	public boolean enableAnimationThrottling = true;
-	public boolean enableGpuEntityInstancing = true;
+
+	/**
+	 * GPU-instanced entity proxy draw. Off by default: it currently renders placeholder proxy
+	 * geometry (not final entity models) on top of vanilla rendering, and its whole per-frame
+	 * extraction (entity list + SIMD cull + transforms) feeds only that path, so enabling it costs
+	 * CPU and GPU for no visual gain. The real, working entity distance culling is separate and
+	 * unaffected.
+	 */
+	public boolean enableGpuEntityInstancing = false;
 
 	// --- Entity render distance culling (client, FPS) ---
 

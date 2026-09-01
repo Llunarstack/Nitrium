@@ -98,15 +98,24 @@ public final class CullingPipeline {
 			return;
 		}
 
+		Vec3 sunDirection = estimateSunDirection(client);
+		double viewDistance = client.options.getEffectiveRenderDistance() * 16.0;
+		sectionCuller.shadowCuller().update(cameraPos, sunDirection, viewDistance);
+
+		// The per-entity evaluation below only matters when GPU entity occlusion is actually doing
+		// real work. When it is off or deferred to another mod, evaluate() returns VISIBLE for
+		// everything, so building the set (iterating all entities twice) is wasted — isEntityVisible
+		// is fail-open and returns the same result. Skip it.
+		boolean occlusionActive = NitriumConfigManager.get().enableEntityOcclusion
+				&& dev.nitrium.compat.ModCompatibility.isActive(dev.nitrium.compat.NitriumFeature.GPU_ENTITY_OCCLUSION);
+		if (!occlusionActive) {
+			return;
+		}
+
 		Frustum frustum = captureFrustum(client);
 		if (frustum == null) {
 			return;
 		}
-
-		Vec3 sunDirection = estimateSunDirection(client);
-
-		double viewDistance = client.options.getEffectiveRenderDistance() * 16.0;
-		sectionCuller.shadowCuller().update(cameraPos, sunDirection, viewDistance);
 
 		for (Entity entity : level.entitiesForRendering()) {
 			CullResult result = entityCuller.evaluate(entity, frustum, stats);

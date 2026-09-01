@@ -26,6 +26,14 @@ public final class EntityRenderCuller {
 	private final AtomicLong tested = new AtomicLong();
 	private final AtomicLong culled = new AtomicLong();
 
+	// Frame-constant cull distances, recomputed once per frame instead of per entity. shouldRender is
+	// called for every entity on the main pass and again on each shader shadow pass, so hoisting the
+	// render-distance / bottleneck / Iris lookups out of the per-entity path is a real saving.
+	private long cachedFrame = -1;
+	private double frameNearSq;
+	private double frameMaxNormalSq;
+	private double frameMaxItemSq;
+
 	private EntityRenderCuller() {
 	}
 
@@ -48,23 +56,28 @@ public final class EntityRenderCuller {
 			return true;
 		}
 
+		refreshFrameCache(config);
+
 		double dx = entity.getX() - camX;
 		double dy = entity.getY() - camY;
 		double dz = entity.getZ() - camZ;
 		double distanceSq = dx * dx + dy * dy + dz * dz;
 
-		double near = Math.max(0, config.entityCullNearRadiusBlocks);
-		if (distanceSq <= near * near) {
+		if (distanceSq <= frameNearSq) {
 			return true;
 		}
 
-		double maxBlocks = effectiveMaxDistance(entity, config);
-		if (distanceSq <= maxBlocks * maxBlocks) {
+		double maxSq = isDecorative(entity) ? frameMaxItemSq : frameMaxNormalSq;
+		if (distanceSq <= maxSq) {
 			return true;
 		}
 
 		culled.incrementAndGet();
 		return false;
+	}
+
+	private static boolean isDecorative(Entity entity) {
+		return entity instanceof ItemEntity || entity instanceof ExperienceOrb || entity instanceof ArmorStand;
 	}
 
 	private static boolean isExempt(Entity entity) {
@@ -82,34 +95,41 @@ public final class EntityRenderCuller {
 		return false;
 	}
 
-	private double effectiveMaxDistance(Entity entity, NitriumConfig config) {
-		int cap = config.maxEntityRenderDistanceBlocks;
+	/** Recompute the frame-constant cull distances once per rendered frame. */
+	private void refreshFrameCache(NitriumConfig config) {
+		long frame = PerformanceMonitor.get().latestMetrics().frameIndex();
+		if (frame == cachedFrame) {
+			return;
+		}
+		cachedFrame = frame;
 
-		// Cheap, high-count decorative entities are culled sooner.
-		if (entity instanceof ItemEntity || entity instanceof ExperienceOrb || entity instanceof ArmorStand) {
-			cap = Math.min(cap, config.itemEntityRenderDistanceBlocks);
+		double stress = 1.0;
+		BottleneckType bottleneck = PerformanceMonitor.get().dominantBottleneck();
+		if (bottleneck == BottleneckType.GPU_BOUND || bottleneck == BottleneckType.CPU_BOUND) {
+			stress = config.entityCullStressFactor;
+		}
+		// With a shader pack active, entities are also drawn into the shadow map, so a shorter entity
+		// distance roughly halves their contribution to the (very expensive) shadow pass.
+		if (dev.nitrium.client.governor.QualityGovernor.get().isIrisGoverned()) {
+			stress *= config.shaderEntityCullFactor;
 		}
 
 		// Never exceed the terrain render distance — culling entities inside loaded terrain only.
+		int terrain = Integer.MAX_VALUE;
 		Minecraft client = Minecraft.getInstance();
 		if (client.options != null) {
-			cap = Math.min(cap, client.options.getEffectiveRenderDistance() * 16);
+			terrain = client.options.getEffectiveRenderDistance() * 16;
 		}
 
-		double distance = cap;
-		BottleneckType bottleneck = PerformanceMonitor.get().dominantBottleneck();
-		if (bottleneck == BottleneckType.GPU_BOUND || bottleneck == BottleneckType.CPU_BOUND) {
-			distance *= config.entityCullStressFactor;
-		}
+		double near = Math.max(0, config.entityCullNearRadiusBlocks);
+		double normal = Math.max(Math.min(config.maxEntityRenderDistanceBlocks, terrain) * stress, near);
+		double item = Math.max(
+				Math.min(Math.min(config.maxEntityRenderDistanceBlocks, config.itemEntityRenderDistanceBlocks), terrain) * stress,
+				near);
 
-		// With a shader pack active, entities are also drawn into the shadow map, so a shorter
-		// entity distance roughly halves their contribution to the (very expensive) shadow pass.
-		if (dev.nitrium.client.governor.QualityGovernor.get().isIrisGoverned()) {
-			distance *= config.shaderEntityCullFactor;
-		}
-
-		// Keep the cap at or above the near radius so the near guarantee always holds.
-		return Math.max(distance, config.entityCullNearRadiusBlocks);
+		frameNearSq = near * near;
+		frameMaxNormalSq = normal * normal;
+		frameMaxItemSq = item * item;
 	}
 
 	public long tested() {
