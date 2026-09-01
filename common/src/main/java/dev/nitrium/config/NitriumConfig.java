@@ -327,4 +327,19 @@ public final class NitriumConfig {
 
 	/** Max concurrent native chunk write operations. */
 	public int maxConcurrentChunkWrites = 4;
+
+	/**
+	 * Region-file write compression for worlds this game saves (singleplayer / integrated server).
+	 * Minecraft records the codec per chunk and can read any of them, so changing this is fully
+	 * backwards/forwards compatible — no world conversion, no corruption risk.
+	 * <ul>
+	 *   <li>{@code default} — leave Minecraft's choice (Deflate/zlib): smallest files.</li>
+	 *   <li>{@code lz4} — much faster compress/decompress at the cost of ~1.5–2× larger region files;
+	 *       smoother chunk I/O when moving fast or at high render distance.</li>
+	 *   <li>{@code none} — no compression: fastest I/O, largest files.</li>
+	 *   <li>{@code deflate} — force zlib explicitly.</li>
+	 * </ul>
+	 * Dedicated servers should use {@code region-file-compression} in server.properties instead.
+	 */
+	public String regionFileCompression = "default";
 }
