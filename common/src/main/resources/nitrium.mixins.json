@@ -15,7 +15,8 @@
 		"ItemEntityMixin",
 		"RedStoneWireBlockMixin",
 		"ExperienceOrbInvoker",
-		"ItemEntityInvoker"
+		"ItemEntityInvoker",
+		"SimpleRegionStorageMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

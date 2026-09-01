@@ -1,6 +1,7 @@
 package dev.nitrium.client.culling.entity;
 
 import dev.nitrium.client.culling.CullResult;
+import dev.nitrium.client.culling.terrain.HiZOcclusionCuller;
 import dev.nitrium.client.culling.CullingStats;
 import dev.nitrium.compat.ModCompatibility;
 import dev.nitrium.compat.NitriumFeature;
@@ -36,10 +37,8 @@ public final class EntityOcclusionCuller {
 			return CullResult.OCCLUDED;
 		}
 
-		// TODO: render the proxy AABB into a low-res depth buffer under a GL_SAMPLES_PASSED query.
-		// If samples == 0, entity is occluded by terrain.
-		boolean gpuOccluded = false;
-		if (gpuOccluded) {
+		if (HiZOcclusionCuller.get().isPyramidReady()
+				&& GpuEntityOcclusionQuery.get().isOccludedByHiZ(bounds)) {
 			stats.recordEntityOccluded();
 			return CullResult.OCCLUDED;
 		}

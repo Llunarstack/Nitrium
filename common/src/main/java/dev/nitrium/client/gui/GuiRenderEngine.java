@@ -4,6 +4,7 @@ import dev.nitrium.Nitrium;
 import dev.nitrium.memory.NativeResourceCleaner;
 import dev.nitrium.client.platform.ClientEvents;
 import net.minecraft.client.Minecraft;
+import org.lwjgl.opengl.GL11;
 
 import java.lang.ref.Cleaner;
 
@@ -73,7 +74,10 @@ public final class GuiRenderEngine {
 		}
 		if (hudCache.isDirty()) {
 			stats.recordHudRebuild();
-			// TODO: render the static HUD widgets into the hudCache framebuffer.
+			hudCache.bindForWrite();
+			GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+			hudCache.unbind();
 		}
 	}
 

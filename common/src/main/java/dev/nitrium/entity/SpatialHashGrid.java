@@ -2,6 +2,7 @@ package dev.nitrium.entity;
 
 import dev.nitrium.config.NitriumConfigManager;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
@@ -65,6 +66,42 @@ public final class SpatialHashGrid {
 
 	public int emptyBucketProbes() {
 		return emptyBuckets;
+	}
+
+	/**
+	 * Finds the nearest player using the spatial hash first, then falls back to a full scan.
+	 */
+	public Player findNearestPlayer(Entity entity, Iterable<? extends Player> players) {
+		Vec3 position = entity.position();
+		Player nearest = null;
+		double bestDistance = Double.MAX_VALUE;
+
+		for (Entity candidate : queryNearby(position)) {
+			if (candidate instanceof Player player && player.isAlive()) {
+				double distance = entity.distanceToSqr(player);
+				if (distance < bestDistance) {
+					bestDistance = distance;
+					nearest = player;
+				}
+			}
+		}
+
+		if (nearest != null) {
+			return nearest;
+		}
+
+		for (Player player : players) {
+			if (!player.isAlive()) {
+				continue;
+			}
+			double distance = entity.distanceToSqr(player);
+			if (distance < bestDistance) {
+				bestDistance = distance;
+				nearest = player;
+			}
+		}
+
+		return nearest;
 	}
 
 	public void clear() {

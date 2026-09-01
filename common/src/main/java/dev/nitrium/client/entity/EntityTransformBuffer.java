@@ -3,20 +3,30 @@ package dev.nitrium.client.entity;
 import dev.nitrium.Nitrium;
 import dev.nitrium.client.nativegl.GlContext;
 import dev.nitrium.config.NitriumConfigManager;
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
+import org.lwjgl.system.MemoryUtil;
+
+import java.nio.ByteBuffer;
+import java.util.List;
 
 /**
  * SSBO holding per-instance position, rotation, and animation frame indices.
  * Layout: 16 floats (mat4) + 1 int animFrame per instance = 68 bytes/instance.
  */
 public final class EntityTransformBuffer {
+	public static final int BINDING_POINT = 1;
+	public static final int BYTES_PER_INSTANCE = 68;
+
 	private static EntityTransformBuffer instance;
 
 	private int ssboId;
 	private int capacityInstances;
 	private boolean requested;
 	private boolean initialized;
+	private ByteBuffer uploadScratch;
 
 	private EntityTransformBuffer() {
 	}
@@ -28,11 +38,6 @@ public final class EntityTransformBuffer {
 		return instance;
 	}
 
-	/**
-	 * Record the requested capacity. The GL buffer itself is created lazily on the render thread
-	 * via {@link #ensureGlBuffer()} — never here, since this runs during client init before the
-	 * GL context exists.
-	 */
 	public void init(int maxInstances) {
 		if (!NitriumConfigManager.get().enableGpuEntityInstancing) {
 			return;
@@ -50,7 +55,12 @@ public final class EntityTransformBuffer {
 		}
 
 		ssboId = GL15.glGenBuffers();
-		// TODO: glBufferData(GL_SHADER_STORAGE_BUFFER, capacity * 68, GL_DYNAMIC_DRAW).
+		long bytes = (long) capacityInstances * BYTES_PER_INSTANCE;
+		GL15.glBindBuffer(GL43.GL_SHADER_STORAGE_BUFFER, ssboId);
+		GL15.glBufferData(GL43.GL_SHADER_STORAGE_BUFFER, bytes, GL15.GL_DYNAMIC_DRAW);
+		GL15.glBindBuffer(GL43.GL_SHADER_STORAGE_BUFFER, 0);
+
+		uploadScratch = MemoryUtil.memAlloc((int) Math.min(bytes, Integer.MAX_VALUE));
 		initialized = true;
 		Nitrium.LOGGER.debug("Nitrium entity transform SSBO: {} instances max", capacityInstances);
 		return true;
@@ -61,11 +71,37 @@ public final class EntityTransformBuffer {
 			return;
 		}
 
-		// TODO: pack the InstanceData into a native buffer and glBufferSubData it up.
+		int count = 0;
+		uploadScratch.clear();
+
+		for (List<EntityInstanceBatch.InstanceData> instances : batch.batches().values()) {
+			for (EntityInstanceBatch.InstanceData data : instances) {
+				if (count >= capacityInstances) {
+					break;
+				}
+
+				Matrix4f matrix = data.transform();
+				uploadScratch.putFloat(matrix.m00()).putFloat(matrix.m10()).putFloat(matrix.m20()).putFloat(matrix.m30());
+				uploadScratch.putFloat(matrix.m01()).putFloat(matrix.m11()).putFloat(matrix.m21()).putFloat(matrix.m31());
+				uploadScratch.putFloat(matrix.m02()).putFloat(matrix.m12()).putFloat(matrix.m22()).putFloat(matrix.m32());
+				uploadScratch.putFloat(matrix.m03()).putFloat(matrix.m13()).putFloat(matrix.m23()).putFloat(matrix.m33());
+				uploadScratch.putInt(data.animationFrame());
+				count++;
+			}
+		}
+
+		if (count == 0) {
+			return;
+		}
+
+		uploadScratch.flip();
+		GL15.glBindBuffer(GL43.GL_SHADER_STORAGE_BUFFER, ssboId);
+		GL15.glBufferSubData(GL43.GL_SHADER_STORAGE_BUFFER, 0, uploadScratch);
+		GL15.glBindBuffer(GL43.GL_SHADER_STORAGE_BUFFER, 0);
 	}
 
 	public int ssboBinding() {
-		return 0; // TODO: bind point shared by the compute pass and instanced vertex shader.
+		return BINDING_POINT;
 	}
 
 	public void bind() {
@@ -75,6 +111,10 @@ public final class EntityTransformBuffer {
 	}
 
 	public void close() {
+		if (uploadScratch != null) {
+			MemoryUtil.memFree(uploadScratch);
+			uploadScratch = null;
+		}
 		if (initialized && GlContext.isReady()) {
 			GL15.glDeleteBuffers(ssboId);
 		}

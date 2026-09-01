@@ -5,7 +5,7 @@
 namespace nitrium {
 
 const char* version() {
-    return "0.1.0-avx2";
+    return "0.1.0-native";
 }
 
 } // namespace nitrium
@@ -17,11 +17,23 @@ JNIEXPORT jstring JNICALL Java_dev_nitrium_nativecore_NitriumNative_nitriumVersi
 }
 
 JNIEXPORT jboolean JNICALL Java_dev_nitrium_nativecore_NitriumNative_hasAvx2(JNIEnv*, jclass) {
-#if defined(__AVX2__)
-    return JNI_TRUE;
-#else
-    return JNI_FALSE;
-#endif
+    return nitrium::cpu_has_avx2() ? JNI_TRUE : JNI_FALSE;
+}
+
+JNIEXPORT jint JNICALL Java_dev_nitrium_nativecore_NitriumNative_cpuVendor(JNIEnv*, jclass) {
+    return nitrium::cpu_vendor();
+}
+
+JNIEXPORT jint JNICALL Java_dev_nitrium_nativecore_NitriumNative_cpuLogicalCores(JNIEnv*, jclass) {
+    return nitrium::cpu_logical_cores();
+}
+
+JNIEXPORT jint JNICALL Java_dev_nitrium_nativecore_NitriumNative_cpuPhysicalCores(JNIEnv*, jclass) {
+    return nitrium::cpu_physical_cores();
+}
+
+JNIEXPORT jboolean JNICALL Java_dev_nitrium_nativecore_NitriumNative_hasAvx512(JNIEnv*, jclass) {
+    return nitrium::cpu_has_avx512() ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT jlong JNICALL Java_dev_nitrium_nativecore_NativeMemoryArena_nativeAlloc(JNIEnv*, jclass, jlong bytes) {
@@ -209,6 +221,22 @@ JNIEXPORT jboolean JNICALL Java_dev_nitrium_nativecore_NativeChunkIo_nativeSubmi
     const bool ok = nitrium::chunk_io_submit_async(reinterpret_cast<const std::uint8_t*>(bytes), static_cast<std::size_t>(length));
     env->ReleasePrimitiveArrayCritical(payload, bytes, JNI_ABORT);
     return ok ? JNI_TRUE : JNI_FALSE;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_dev_nitrium_nativecore_NativeChunkIo_nativePollWrite(JNIEnv* env, jclass) {
+    alignas(64) std::uint8_t buffer[1024 * 1024];
+    const int written = nitrium::chunk_io_poll_write(buffer, static_cast<int>(sizeof(buffer)));
+    if (written <= 0) {
+        return nullptr;
+    }
+
+    jbyteArray result = env->NewByteArray(written);
+    if (result == nullptr) {
+        return nullptr;
+    }
+
+    env->SetByteArrayRegion(result, 0, written, reinterpret_cast<const jbyte*>(buffer));
+    return result;
 }
 
 } // extern "C"

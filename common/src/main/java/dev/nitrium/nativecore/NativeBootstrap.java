@@ -19,6 +19,7 @@ public final class NativeBootstrap {
 		}
 
 		NitriumNativeLoader.load();
+		CpuCapabilities.probe();
 		memoryArena = NativeMemoryArena.create();
 		Nitrium.LOGGER.info("Nitrium native bootstrap complete (available={})", NitriumNativeLoader.isAvailable());
 	}

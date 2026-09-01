@@ -1,19 +1,17 @@
 package dev.nitrium.client.governor;
 
 import dev.nitrium.Nitrium;
-import net.minecraft.client.GraphicsPreset;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.server.level.ParticleStatus;
 
 /**
- * Maps a {@link ShaderProfile} onto vanilla graphics options (preset, entity shadows, particles) so
- * the shader governor still does something visible without a shader pack. Only slow-loop knobs are
- * touched, and the controller's cooldown keeps fast/fancy toggles — which rebuild chunks — rare.
+ * Maps a {@link ShaderProfile} onto vanilla graphics options (entity shadows, particles) so the
+ * shader governor still does something visible without a shader pack. Graphics presets (fast/fancy)
+ * are intentionally not touched — {@code applyGraphicsPreset} rebuilds every loaded chunk.
  * With Iris present, the richer profile fields go to the Iris bridge instead.
  */
 public final class VanillaGraphicsBridge {
-	private GraphicsPreset lastPreset;
 	private Boolean lastEntityShadows;
 	private ParticleStatus lastParticles;
 
@@ -28,14 +26,6 @@ public final class VanillaGraphicsBridge {
 
 		Options options = client.options;
 		boolean changed = false;
-
-		GraphicsPreset desiredPreset = presetFor(profile.level());
-		if (options.graphicsPreset().get() != desiredPreset && desiredPreset != lastPreset) {
-			// applyGraphicsPreset cascades the preset to leaves/water/clouds sub-options.
-			options.applyGraphicsPreset(desiredPreset);
-			lastPreset = desiredPreset;
-			changed = true;
-		}
 
 		boolean desiredEntityShadows = profile.entityShadows();
 		if (options.entityShadows().get() != desiredEntityShadows
@@ -53,8 +43,8 @@ public final class VanillaGraphicsBridge {
 		}
 
 		if (changed) {
-			Nitrium.LOGGER.debug("Nitrium vanilla graphics: preset={}, entityShadows={}, particles={}",
-					desiredPreset, desiredEntityShadows, desiredParticles);
+			Nitrium.LOGGER.debug("Nitrium vanilla graphics: entityShadows={}, particles={}",
+					desiredEntityShadows, desiredParticles);
 		}
 		return changed;
 	}
@@ -67,16 +57,7 @@ public final class VanillaGraphicsBridge {
 		};
 	}
 
-	private static GraphicsPreset presetFor(ShaderQualityLevel level) {
-		return switch (level) {
-			case SURVIVAL, PERFORMANCE -> GraphicsPreset.FAST;
-			case BALANCED, HIGH -> GraphicsPreset.FANCY;
-			case CINEMATIC -> GraphicsPreset.FABULOUS;
-		};
-	}
-
 	public void reset() {
-		lastPreset = null;
 		lastEntityShadows = null;
 		lastParticles = null;
 	}

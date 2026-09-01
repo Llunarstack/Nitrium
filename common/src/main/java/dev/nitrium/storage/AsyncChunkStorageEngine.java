@@ -5,6 +5,8 @@ import dev.nitrium.config.NitriumConfigManager;
 import dev.nitrium.memory.NitriumWorkerThreads;
 import dev.nitrium.nativecore.NativeChunkIo;
 import dev.nitrium.platform.ServerEvents;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 
 import java.util.concurrent.ExecutorService;
@@ -38,35 +40,62 @@ public final class AsyncChunkStorageEngine {
 	private void register() {
 		nativeRing = NativeChunkIo.init();
 
-		ServerEvents.get().serverTickEnd(server -> drainQueue());
+		ServerEvents.get().serverTickEnd(server -> drainQueue(server));
+		ServerEvents.get().serverWorldUnload((server, level) -> {
+			if (level.dimension() == level.getServer().overworld().dimension()) {
+				ChunkDiskWriter.init(level.getServer().getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT));
+			}
+		});
 
 		Nitrium.LOGGER.info("Nitrium async chunk storage active (nativeRing={}, writers={})",
 				nativeRing, NitriumConfigManager.get().maxConcurrentChunkWrites);
 	}
 
 	public void enqueueChunkSave(ChunkPos pos, byte[] payload) {
-		stats.recordEnqueue(payload.length);
-		if (nativeRing && NativeChunkIo.submitWrite(payload)) {
+		ChunkSavePayload record = ChunkSavePayload.encode(pos, payload);
+		byte[] encoded = record.encoded();
+		stats.recordEnqueue(encoded.length);
+
+		if (nativeRing && NativeChunkIo.submitWrite(encoded)) {
 			stats.recordNativeWrite();
 			return;
 		}
-		if (!fallbackQueue.offer(payload)) {
+
+		if (!fallbackQueue.offer(encoded)) {
 			stats.recordDropped();
 			Nitrium.LOGGER.warn("Nitrium chunk save queue full — dropping write for {}", pos);
 		}
 	}
 
-	private void drainQueue() {
+	private void drainQueue(MinecraftServer server) {
 		byte[] payload;
 		while ((payload = fallbackQueue.poll()) != null) {
 			byte[] copy = payload;
-			writers.execute(() -> {
-				// TODO: write to the region file via native overlapped I/O.
-				stats.recordFlushed(copy.length);
-			});
+			writers.execute(() -> flushPayload(copy));
 		}
+
 		if (nativeRing) {
+			byte[] nativePayload;
+			while ((nativePayload = NativeChunkIo.pollWrite()) != null) {
+				byte[] copy = nativePayload;
+				writers.execute(() -> flushPayload(copy));
+			}
 			stats.setNativePending(NativeChunkIo.pendingBytes());
+		}
+	}
+
+	private static void flushPayload(byte[] encoded) {
+		AsyncChunkStorageEngine engine = get();
+		if (engine == null) {
+			return;
+		}
+
+		try {
+			ChunkSavePayload payload = ChunkSavePayload.decode(encoded);
+			ChunkDiskWriter.writeEncoded(encoded);
+			engine.stats.recordFlushed(encoded.length);
+		} catch (Exception exception) {
+			Nitrium.LOGGER.warn("Failed to flush async chunk payload", exception);
 		}
 	}
 

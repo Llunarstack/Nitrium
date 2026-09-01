@@ -3,7 +3,12 @@
 	"package": "dev.nitrium.client.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
-		"EntityRenderDistanceCullMixin"
+		"EntityRenderDistanceCullMixin",
+		"LevelRendererMixin",
+		"ChunkSectionsToRenderMixin",
+		"LevelChunkSnapshotMixin",
+		"ParticleEngineAccessor",
+		"ParticleAccessor"
 	],
 	"injectors": {
 		"defaultRequire": 1

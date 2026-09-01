@@ -26,6 +26,22 @@ public final class SimdNoise3D {
 			return;
 		}
 
+		fillCoarseGridJava(out, sizeX, sizeY, sizeZ, originX, originY, originZ, stepX, stepY, stepZ, seed);
+	}
+
+	public static void fillCoarseGridJava(
+			float[] out,
+			int sizeX,
+			int sizeY,
+			int sizeZ,
+			float originX,
+			float originY,
+			float originZ,
+			float stepX,
+			float stepY,
+			float stepZ,
+			int seed
+	) {
 		javaFillCoarse(out, sizeX, sizeY, sizeZ, originX, originY, originZ, stepX, stepY, stepZ, seed);
 	}
 

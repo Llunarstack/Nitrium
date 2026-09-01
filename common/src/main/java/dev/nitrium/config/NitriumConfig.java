@@ -41,9 +41,9 @@ public final class NitriumConfig {
 	// --- Adaptive render distance (FPS driven) ---
 
 	/**
-	 * Automatically grow/shrink Minecraft render distance to hold the target FPS. Off by default:
-	 * every change forces a chunk reload, which is visually disruptive when FPS sits near a
-	 * threshold (e.g. under heavy shaders).
+	 * Automatically grow/shrink Minecraft render distance to hold the target FPS. Off by default.
+	 * Nitrium never applies render-distance changes at runtime because each one forces a full chunk
+	 * reload; when enabled, values are advisory for the debug overlay only.
 	 */
 	public boolean enableAdaptiveRenderDistance = false;
 
@@ -212,6 +212,12 @@ public final class NitriumConfig {
 	// --- Mod compatibility ---
 
 	/**
+	 * When true, Nitrium automatically tunes worker counts and memory budgets from detected CPU/GPU
+	 * hardware (NVIDIA, AMD, Intel, core count, VRAM). User config values act as ceilings.
+	 */
+	public boolean enableHardwareAutoTune = true;
+
+	/**
 	 * When true, Nitrium automatically defers features that overlap with known performance mods
 	 * (Lithium, Starlight, C2ME, Clumps, Krypton, FerriteCore, etc.).
 	 */
@@ -295,8 +301,13 @@ public final class NitriumConfig {
 
 	// --- Async chunk storage (server) ---
 
-	/** Ring-buffer async chunk saver with native direct I/O. */
-	public boolean enableAsyncChunkStorage = true;
+	/**
+	 * Ring-buffer async chunk saver. Off by default: the drain currently writes each queued chunk to
+	 * a write-only file under {@code .nitrium/chunk-queue/} that nothing reads back or deletes, so it
+	 * only grows disk usage (and re-serializes every chunk) with no benefit. Re-enable once the drain
+	 * writes real region data.
+	 */
+	public boolean enableAsyncChunkStorage = false;
 
 	/** Ring buffer capacity for pending chunk writes (MB). */
 	public int chunkSaveRingBufferMb = 64;

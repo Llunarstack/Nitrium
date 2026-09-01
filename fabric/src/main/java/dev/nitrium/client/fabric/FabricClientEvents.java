@@ -1,12 +1,12 @@
 package dev.nitrium.client.fabric;
 
 import dev.nitrium.client.platform.ClientEvents;
+import dev.nitrium.client.platform.ClientRenderStages;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.Identifier;
@@ -29,27 +29,27 @@ public final class FabricClientEvents implements ClientEvents {
 
 	@Override
 	public void worldRenderStart(Runnable callback) {
-		WorldRenderEvents.START_MAIN.register(context -> callback.run());
+		ClientRenderStages.onRenderStart(callback);
 	}
 
 	@Override
 	public void worldRenderBeforeEntities(Runnable callback) {
-		WorldRenderEvents.BEFORE_ENTITIES.register(context -> callback.run());
+		ClientRenderStages.onBeforeEntities(callback);
 	}
 
 	@Override
 	public void worldRenderAfterEntities(Runnable callback) {
-		WorldRenderEvents.AFTER_ENTITIES.register(context -> callback.run());
+		ClientRenderStages.onAfterEntities(callback);
 	}
 
 	@Override
 	public void worldRenderBeforeDebug(Runnable callback) {
-		WorldRenderEvents.BEFORE_DEBUG_RENDER.register(context -> callback.run());
+		ClientRenderStages.onBeforeDebug(callback);
 	}
 
 	@Override
 	public void worldRenderEnd(Runnable callback) {
-		WorldRenderEvents.END_MAIN.register(context -> callback.run());
+		ClientRenderStages.onRenderEnd(callback);
 	}
 
 	@Override

@@ -1,64 +1,75 @@
 package dev.nitrium.client.forge;
 
 import dev.nitrium.client.platform.ClientEvents;
+import dev.nitrium.client.platform.ClientRenderStages;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.Identifier;
+import net.minecraftforge.client.event.AddGuiOverlayLayersEvent;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.client.gui.overlay.ForgeLayer;
+import net.minecraftforge.client.gui.overlay.ForgeLayeredDraw;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.level.LevelEvent;
 
 import java.util.function.Consumer;
 
 /**
- * Binds {@link ClientEvents} to the Forge game event bus.
+ * Binds {@link ClientEvents} to the Forge game event bus (EventBus 7).
  *
- * <p>Forge 61.x reworked the render pipeline and no longer exposes discrete world-render stage
- * events, so the world-render hooks are no-ops here — the client features that used them are all
- * still unimplemented stubs, and the tick-driven governor plus the entity-cull mixin (which don't
- * need render events) work regardless. The optional debug HUD is not wired on Forge.
+ * <p>Forge 61.x removed discrete world-render stage events; render-tick hooks drive the profiler
+ * instead. HUD overlays register through {@link AddGuiOverlayLayersEvent}.
  */
 public final class ForgeClientEvents implements ClientEvents {
 	@Override
 	public void clientTickStart(Consumer<net.minecraft.client.Minecraft> callback) {
-		MinecraftForge.EVENT_BUS.addListener((TickEvent.ClientTickEvent.Pre event) ->
-				callback.accept(net.minecraft.client.Minecraft.getInstance()));
+		TickEvent.ClientTickEvent.Pre.BUS.addListener(
+				event -> callback.accept(net.minecraft.client.Minecraft.getInstance()));
 	}
 
 	@Override
 	public void clientTickEnd(Consumer<net.minecraft.client.Minecraft> callback) {
-		MinecraftForge.EVENT_BUS.addListener((TickEvent.ClientTickEvent.Post event) ->
-				callback.accept(net.minecraft.client.Minecraft.getInstance()));
+		TickEvent.ClientTickEvent.Post.BUS.addListener(
+				event -> callback.accept(net.minecraft.client.Minecraft.getInstance()));
 	}
 
 	@Override
 	public void worldRenderStart(Runnable callback) {
-		// No Forge 61.x equivalent.
+		ClientRenderStages.onRenderStart(callback);
 	}
 
 	@Override
 	public void worldRenderBeforeEntities(Runnable callback) {
-		// No Forge 61.x equivalent.
+		ClientRenderStages.onBeforeEntities(callback);
 	}
 
 	@Override
 	public void worldRenderAfterEntities(Runnable callback) {
-		// No Forge 61.x equivalent.
+		ClientRenderStages.onAfterEntities(callback);
 	}
 
 	@Override
 	public void worldRenderBeforeDebug(Runnable callback) {
-		// No Forge 61.x equivalent.
+		ClientRenderStages.onBeforeDebug(callback);
 	}
 
 	@Override
 	public void worldRenderEnd(Runnable callback) {
-		// No Forge 61.x equivalent.
+		ClientRenderStages.onRenderEnd(callback);
 	}
 
 	@Override
 	public void clientWorldChanged(Consumer<ClientLevel> callback) {
-		// Flush caches on disconnect; the consumer tracks the previous world itself.
-		MinecraftForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut event) -> callback.accept(null));
+		LevelEvent.Load.BUS.addListener((LevelEvent.Load event) -> {
+			if (event.getLevel() instanceof ClientLevel level) {
+				callback.accept(level);
+			}
+		});
+		LevelEvent.Unload.BUS.addListener((LevelEvent.Unload event) -> {
+			if (event.getLevel() instanceof ClientLevel) {
+				callback.accept(null);
+			}
+		});
+		ClientPlayerNetworkEvent.LoggingOut.BUS.addListener(event -> callback.accept(null));
 	}
 
 	@Override
@@ -68,6 +79,9 @@ public final class ForgeClientEvents implements ClientEvents {
 
 	@Override
 	public void hud(Identifier id, HudLayer layer) {
-		// The optional debug overlay is not wired on Forge's reworked GUI layer system.
+		AddGuiOverlayLayersEvent.BUS.addListener((AddGuiOverlayLayersEvent event) -> {
+			ForgeLayer overlay = (graphics, tickCounter) -> layer.render(graphics, tickCounter);
+			event.getLayeredDraw().add(ForgeLayeredDraw.POST_SLEEP_STACK, id, overlay);
+		});
 	}
 }

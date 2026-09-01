@@ -1,0 +1,24 @@
+#version 430 core
+layout(local_size_x = 8, local_size_y = 8) in;
+
+layout(binding = 0, r32f) uniform readonly image2D uSource;
+layout(binding = 1, r32f) uniform writeonly image2D uDest;
+
+uniform ivec2 uSourceSize;
+
+void main() {
+    ivec2 destCoord = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 srcBase = destCoord * 2;
+
+    if (srcBase.x >= uSourceSize.x || srcBase.y >= uSourceSize.y) {
+        return;
+    }
+
+    float d0 = imageLoad(uSource, srcBase).r;
+    float d1 = imageLoad(uSource, min(srcBase + ivec2(1, 0), uSourceSize - ivec2(1))).r;
+    float d2 = imageLoad(uSource, min(srcBase + ivec2(0, 1), uSourceSize - ivec2(1))).r;
+    float d3 = imageLoad(uSource, min(srcBase + ivec2(1, 1), uSourceSize - ivec2(1))).r;
+
+    float maxDepth = max(max(d0, d1), max(d2, d3));
+    imageStore(uDest, destCoord, vec4(maxDepth));
+}

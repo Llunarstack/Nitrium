@@ -7,6 +7,13 @@ namespace nitrium {
 
 const char* version();
 
+// Runtime CPU feature detection (CPUID)
+int cpu_vendor(); // 0=unknown, 1=Intel, 2=AMD
+int cpu_logical_cores();
+int cpu_physical_cores();
+bool cpu_has_avx2();
+bool cpu_has_avx512();
+
 // Arena allocator — bump pool outside JVM heap
 void* arena_alloc(std::size_t bytes);
 void arena_reset();
@@ -48,7 +55,7 @@ void noise3d_mark_high_gradient(
     float threshold
 );
 
-// Packet compression (currently an identity wrapper; TODO: libdeflate/zstd SIMD)
+// Packet compression (LZ77-lite with raw fallback)
 int packet_compress(const std::uint8_t* input, int input_len, std::uint8_t* output, int output_cap);
 int packet_decompress(const std::uint8_t* input, int input_len, std::uint8_t* output, int output_cap);
 
@@ -60,5 +67,8 @@ std::size_t ring_buffer_free();
 bool ring_buffer_write(const std::uint8_t* input, std::size_t length);
 bool ring_buffer_read(std::uint8_t* output, std::size_t length);
 bool chunk_io_submit_async(const std::uint8_t* payload, std::size_t length);
+
+// Dequeue one pending write from the ring buffer. Returns length written to output, or 0 if empty.
+int chunk_io_poll_write(std::uint8_t* output, int output_cap);
 
 } // namespace nitrium

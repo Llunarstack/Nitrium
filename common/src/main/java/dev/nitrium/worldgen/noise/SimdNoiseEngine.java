@@ -24,13 +24,13 @@ public final class SimdNoiseEngine {
 		if (NitriumConfigManager.get().enableSimdNoise && NitriumNativeLoader.isAvailable()) {
 			SimdNoise3D.fillCoarseGrid(out, sizeX, sizeY, sizeZ, originX, originY, originZ, stepX, stepY, stepZ, seed);
 		} else {
-			SimdNoise3D.fillCoarseGrid(out, sizeX, sizeY, sizeZ, originX, originY, originZ, stepX, stepY, stepZ, seed);
+			SimdNoise3D.fillCoarseGridJava(out, sizeX, sizeY, sizeZ, originX, originY, originZ, stepX, stepY, stepZ, seed);
 		}
 	}
 
 	public float sampleFullResolution(int worldX, int worldY, int worldZ, int seed) {
 		float[] single = new float[1];
-		SimdNoise3D.fillCoarseGrid(single, 1, 1, 1, worldX, worldY, worldZ, 1.0f, 1.0f, 1.0f, seed);
+		fillCoarse(single, 1, 1, 1, worldX, worldY, worldZ, 1.0f, 1.0f, 1.0f, seed);
 		return single[0];
 	}
 }

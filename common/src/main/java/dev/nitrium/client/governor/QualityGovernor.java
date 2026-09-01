@@ -62,8 +62,10 @@ public final class QualityGovernor {
 			backend.onRenderScale(currentRenderScale);
 		}
 
-		// Render distance reacts to sustained FPS; grows only when we are not GPU-bound.
-		renderDistanceChunks = renderDistanceController.evaluate(config, averageFps, bottleneck, 1);
+		// Render distance is read-only: changing the option forces a full chunk reload.
+		if (config.enableAdaptiveRenderDistance) {
+			renderDistanceChunks = renderDistanceController.evaluate(config, averageFps, bottleneck, 1);
+		}
 	}
 
 	private void slowLoopTick() {

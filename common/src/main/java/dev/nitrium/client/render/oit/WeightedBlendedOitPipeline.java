@@ -3,6 +3,8 @@ package dev.nitrium.client.render.oit;
 import dev.nitrium.Nitrium;
 import dev.nitrium.memory.NativeResourceCleaner;
 import dev.nitrium.client.platform.ClientEvents;
+import dev.nitrium.client.platform.ClientRenderStages;
+import dev.nitrium.compat.ModCompatibility;
 import net.minecraft.client.Minecraft;
 
 import java.lang.ref.Cleaner;
@@ -33,25 +35,38 @@ public final class WeightedBlendedOitPipeline {
 	}
 
 	private void register() {
-		ClientEvents events = ClientEvents.get();
-		events.worldRenderAfterEntities(this::beginTranslucentPass);
-		events.worldRenderEnd(this::endTranslucentPass);
+		ClientRenderStages.onBeforeTranslucent(this::beginTranslucentPass);
+		ClientRenderStages.onAfterTranslucent(this::endTranslucentPass);
+		ClientEvents.get().worldRenderEnd(this::compositeIfNeeded);
 
 		Nitrium.LOGGER.info("Nitrium OIT translucency pipeline active (weighted blended)");
 	}
 
 	private void beginTranslucentPass() {
+		if (ModCompatibility.isIrisLoaded()) {
+			return;
+		}
+
 		stats.recordFrame();
 		ensureBuffers();
 		if (buffers != null) {
 			buffers.clear();
 			buffers.bind();
+			OitBlendState.enable();
 		}
 	}
 
 	private void endTranslucentPass() {
-		if (buffers != null) {
-			buffers.unbind();
+		if (buffers == null || ModCompatibility.isIrisLoaded()) {
+			return;
+		}
+
+		OitBlendState.disable();
+		buffers.unbind();
+	}
+
+	private void compositeIfNeeded() {
+		if (buffers != null && !ModCompatibility.isIrisLoaded()) {
 			compositePass.composite(buffers);
 			stats.recordComposite();
 		}
@@ -95,6 +110,6 @@ public final class WeightedBlendedOitPipeline {
 			buffers.close();
 			buffers = null;
 		}
-		compositePass.invalidate();
+		compositePass.close();
 	}
 }

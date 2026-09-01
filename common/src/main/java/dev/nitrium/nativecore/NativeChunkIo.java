@@ -51,6 +51,13 @@ public final class NativeChunkIo {
 		return false;
 	}
 
+	public static byte[] pollWrite() {
+		if (!initialized || !NitriumNativeLoader.isAvailable()) {
+			return null;
+		}
+		return nativePollWrite();
+	}
+
 	private static native boolean nativeInitRingBuffer(long capacityBytes);
 
 	private static native void nativeShutdownRingBuffer();
@@ -58,4 +65,6 @@ public final class NativeChunkIo {
 	private static native long nativePendingBytes();
 
 	private static native boolean nativeSubmitWrite(byte[] payload);
+
+	private static native byte[] nativePollWrite();
 }

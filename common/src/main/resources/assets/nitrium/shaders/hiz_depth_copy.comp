@@ -1,0 +1,16 @@
+#version 430 core
+layout(local_size_x = 8, local_size_y = 8) in;
+
+layout(binding = 0) uniform sampler2D uDepth;
+layout(r32f, binding = 1) uniform writeonly image2D uOutput;
+
+void main() {
+	ivec2 coord = ivec2(gl_GlobalInvocationID.xy);
+	ivec2 size = imageSize(uOutput);
+	if (coord.x >= size.x || coord.y >= size.y) {
+		return;
+	}
+
+	float depth = texelFetch(uDepth, coord, 0).r;
+	imageStore(uOutput, coord, vec4(depth));
+}

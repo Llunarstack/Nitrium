@@ -1,0 +1,8 @@
+#version 430 core
+layout(local_size_x = 64) in;
+
+// Transform SSBO is bound at binding 1 by GpuEntitySkinningCompute; a full bone palette
+// can replace this pass later. For now the compute dispatch validates the pipeline.
+
+void main() {
+}

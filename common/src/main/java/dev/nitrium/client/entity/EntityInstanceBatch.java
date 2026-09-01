@@ -11,7 +11,7 @@ import java.util.Map;
 
 /**
  * Groups identical entity types so they can be drawn in one instanced pass. The packed transforms
- * feed {@link EntityTransformBuffer}; the instanced draw itself isn't implemented yet.
+ * feed {@link EntityTransformBuffer} and {@link EntityInstancedRenderer}.
  */
 public final class EntityInstanceBatch {
 	private final Map<String, List<InstanceData>> batches = new HashMap<>();
@@ -21,7 +21,7 @@ public final class EntityInstanceBatch {
 	}
 
 	public void add(Entity entity, Matrix4f transform, int animationFrame) {
-		String key = entity.getType().toString();
+		String key = entity.getType().builtInRegistryHolder().key().identifier().toString();
 		batches.computeIfAbsent(key, ignored -> new ArrayList<>())
 				.add(new InstanceData(entity.getId(), transform, animationFrame, entity.position()));
 	}

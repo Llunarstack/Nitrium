@@ -7,21 +7,25 @@ import dev.nitrium.nativecore.NitriumNativeLoader;
 import dev.nitrium.nativecore.SimdFrustumCuller;
 import dev.nitrium.config.NitriumConfigManager;
 import dev.nitrium.entity.EntityOptimizationStats;
-import dev.nitrium.client.platform.ClientEvents;
+import dev.nitrium.client.platform.ClientRenderStages;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import org.joml.Matrix4f;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Client-side entity render optimization: animation throttling, instanced batching, GPU skinning.
+ * Client-side entity render optimization: SIMD frustum culling, animation throttling, instancing.
  */
 public final class EntityRenderOptimizer {
 	private static EntityRenderOptimizer instance;
 
 	private final AnimationRateLimiter animationLimiter = new AnimationRateLimiter();
 	private final EntityInstanceBatch instanceBatch = new EntityInstanceBatch();
+	private final EntityInstancedRenderer instancedRenderer = new EntityInstancedRenderer();
 	private final EntityOptimizationStats clientStats = new EntityOptimizationStats();
 	private final SimdFrustumCuller simdCuller = SimdFrustumCuller.create();
 	private int lastSimdVisibleMask;
@@ -48,11 +52,11 @@ public final class EntityRenderOptimizer {
 		EntityTransformBuffer.get().init(4096);
 		GpuEntitySkinningCompute.get().init();
 
-		ClientEvents events = ClientEvents.get();
-		events.worldRenderBeforeEntities(this::onBeforeEntities);
-		events.worldRenderAfterEntities(this::onAfterEntities);
+		ClientRenderStages.onBeforeEntities(this::onBeforeEntities);
+		ClientRenderStages.onAfterEntities(this::onAfterEntities);
 
-		Nitrium.LOGGER.info("Nitrium entity render optimizer active (client)");
+		Nitrium.LOGGER.info("Nitrium entity render optimizer active (client, native={})",
+				NitriumNativeLoader.isAvailable());
 	}
 
 	private void onBeforeEntities() {
@@ -69,25 +73,37 @@ public final class EntityRenderOptimizer {
 		}
 
 		CullingPipeline culling = CullingPipeline.get();
+		List<Entity> entities = new ArrayList<>();
+		for (Entity entity : level.entitiesForRendering()) {
+			entities.add(entity);
+		}
 
-		if (NitriumNativeLoader.isAvailable()) {
+		boolean simdAvailable = NitriumNativeLoader.isAvailable();
+		if (simdAvailable) {
 			simdCuller.clear();
 			try {
 				simdCuller.setFrustumPlanes(FrustumPlaneExtractor.extractPlanes());
 			} catch (Exception ignored) {
-				// Frustum extraction may fail before GL is ready — Java fallback inside culler
+				// Frustum extraction may fail before GL is ready.
 			}
-		}
 
-		for (Entity entity : level.entitiesForRendering()) {
-			clientStats.recordIndexed();
-
-			if (NitriumNativeLoader.isAvailable()) {
+			for (Entity entity : entities) {
 				var box = entity.getBoundingBox();
 				simdCuller.addAabb(
 						(float) box.minX, (float) box.minY, (float) box.minZ,
 						(float) box.maxX, (float) box.maxY, (float) box.maxZ
 				);
+			}
+			lastSimdVisibleMask = simdCuller.cullVisibleMask();
+		}
+
+		for (int index = 0; index < entities.size(); index++) {
+			Entity entity = entities.get(index);
+			clientStats.recordIndexed();
+
+			if (simdAvailable && !simdCuller.isVisible(index, lastSimdVisibleMask)) {
+				clientStats.recordTickSkipped();
+				continue;
 			}
 
 			boolean visible = culling == null || culling.isEntityVisible(entity.getId());
@@ -102,18 +118,12 @@ public final class EntityRenderOptimizer {
 			}
 
 			if (NitriumConfigManager.get().enableGpuEntityInstancing) {
-				Matrix4f transform = new Matrix4f().translation(
-						(float) entity.getX(),
-						(float) entity.getY(),
-						(float) entity.getZ()
-				);
+				Matrix4f transform = new Matrix4f()
+						.translation((float) entity.getX(), (float) entity.getY(), (float) entity.getZ())
+						.rotateY((float) Math.toRadians(-entity.getYRot()));
 				int animFrame = animationLimiter.shouldUpdateAnimation(mode) ? (int) (frameIndex % 120) : 0;
 				instanceBatch.add(entity, transform, animFrame);
 			}
-		}
-
-		if (NitriumNativeLoader.isAvailable()) {
-			lastSimdVisibleMask = simdCuller.cullVisibleMask();
 		}
 	}
 
@@ -124,7 +134,7 @@ public final class EntityRenderOptimizer {
 
 		EntityTransformBuffer.get().upload(instanceBatch);
 		GpuEntitySkinningCompute.get().dispatch(instanceBatch);
-		// TODO: one glDrawElementsInstanced per batch key.
+		instancedRenderer.draw(instanceBatch);
 	}
 
 	public static EntityRenderOptimizer get() {

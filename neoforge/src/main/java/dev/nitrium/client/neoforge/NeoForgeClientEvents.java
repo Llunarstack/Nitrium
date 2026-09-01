@@ -1,11 +1,11 @@
 package dev.nitrium.client.neoforge;
 
 import dev.nitrium.client.platform.ClientEvents;
+import dev.nitrium.client.platform.ClientRenderStages;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.level.LevelEvent;
 
@@ -33,27 +33,27 @@ public final class NeoForgeClientEvents implements ClientEvents {
 	// NeoForge 21.11 exposes each render stage as its own event subclass.
 	@Override
 	public void worldRenderStart(Runnable callback) {
-		NeoForge.EVENT_BUS.addListener((RenderLevelStageEvent.AfterSky event) -> callback.run());
+		ClientRenderStages.onRenderStart(callback);
 	}
 
 	@Override
 	public void worldRenderBeforeEntities(Runnable callback) {
-		NeoForge.EVENT_BUS.addListener((RenderLevelStageEvent.AfterOpaqueBlocks event) -> callback.run());
+		ClientRenderStages.onBeforeEntities(callback);
 	}
 
 	@Override
 	public void worldRenderAfterEntities(Runnable callback) {
-		NeoForge.EVENT_BUS.addListener((RenderLevelStageEvent.AfterEntities event) -> callback.run());
+		ClientRenderStages.onAfterEntities(callback);
 	}
 
 	@Override
 	public void worldRenderBeforeDebug(Runnable callback) {
-		NeoForge.EVENT_BUS.addListener((RenderLevelStageEvent.AfterParticles event) -> callback.run());
+		ClientRenderStages.onBeforeDebug(callback);
 	}
 
 	@Override
 	public void worldRenderEnd(Runnable callback) {
-		NeoForge.EVENT_BUS.addListener((RenderLevelStageEvent.AfterLevel event) -> callback.run());
+		ClientRenderStages.onRenderEnd(callback);
 	}
 
 	@Override

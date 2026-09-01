@@ -6,10 +6,8 @@ import dev.nitrium.compat.NitriumFeature;
 import dev.nitrium.config.NitriumConfigManager;
 import dev.nitrium.platform.ServerEvents;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -71,7 +69,7 @@ public final class EntityOptimizationEngine {
 
 		for (Entity entity : entities) {
 			stats.recordIndexed();
-			Player nearest = findNearestPlayer(level, entity);
+			Player nearest = spatialGrid.findNearestPlayer(entity, level.players());
 			boolean enclosed = enclosureDetector.isEnclosed(entity, level);
 			if (enclosed) {
 				stats.recordEnclosed();
@@ -142,24 +140,5 @@ public final class EntityOptimizationEngine {
 		enclosureDetector.clear();
 		spatialGrid.clear();
 		stats.reset();
-	}
-
-	private static Player findNearestPlayer(Level level, Entity entity) {
-		if (!(level instanceof ServerLevel serverLevel)) {
-			return null;
-		}
-
-		ServerPlayer nearest = null;
-		double bestDistance = Double.MAX_VALUE;
-
-		for (ServerPlayer player : serverLevel.players()) {
-			double distance = entity.distanceToSqr(player);
-			if (distance < bestDistance) {
-				bestDistance = distance;
-				nearest = player;
-			}
-		}
-
-		return nearest;
 	}
 }

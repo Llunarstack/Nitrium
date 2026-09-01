@@ -10,13 +10,17 @@ import dev.nitrium.client.streaming.SectionKey;
 import dev.nitrium.config.NitriumConfig;
 import dev.nitrium.config.NitriumConfigManager;
 import dev.nitrium.client.platform.ClientEvents;
+import dev.nitrium.client.platform.ClientRenderStages;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,6 +42,8 @@ public final class CullingPipeline {
 	/** Entity IDs approved for rendering this frame. */
 	private final Set<Integer> visibleEntities = ConcurrentHashMap.newKeySet();
 
+	private boolean entitiesEvaluatedThisFrame;
+
 	private CullingPipeline() {
 	}
 
@@ -57,16 +63,16 @@ public final class CullingPipeline {
 			return;
 		}
 
-		ClientEvents events = ClientEvents.get();
-		events.worldRenderStart(this::onWorldRenderStart);
-		events.worldRenderBeforeEntities(() -> {
+		ClientRenderStages.onRenderStart(this::onWorldRenderStart);
+		ClientRenderStages.onBeforeEntities(() -> {
 			Minecraft client = Minecraft.getInstance();
 			Vec3 cameraPos = client.gameRenderer.getMainCamera().position();
 			onBeforeEntities(cameraPos);
 		});
-		events.worldRenderEnd(this::onWorldRenderEnd);
+		ClientRenderStages.onAfterOpaque(this::onAfterOpaque);
+		ClientRenderStages.onRenderEnd(this::onWorldRenderEnd);
 
-		events.clientTickEnd(this::onClientTickEnd);
+		ClientEvents.get().clientTickEnd(this::onClientTickEnd);
 
 		Nitrium.LOGGER.info("Nitrium culling pipeline active");
 	}
@@ -75,6 +81,7 @@ public final class CullingPipeline {
 		stats.reset();
 		visibleSections.clear();
 		visibleEntities.clear();
+		entitiesEvaluatedThisFrame = false;
 
 		Minecraft client = Minecraft.getInstance();
 		if (client.getWindow() != null) {
@@ -109,15 +116,22 @@ public final class CullingPipeline {
 		}
 
 		entityCuller.velocityTracker().prune(level.entitiesForRendering());
+		entitiesEvaluatedThisFrame = true;
 	}
 
-	private void onWorldRenderEnd() {
+	private void onAfterOpaque() {
 		Minecraft client = Minecraft.getInstance();
 		if (client.getWindow() != null) {
 			HiZOcclusionCuller.get().buildDepthPyramid(
 					client.getWindow().getWidth(),
 					client.getWindow().getHeight()
 			);
+		}
+	}
+
+	private void onWorldRenderEnd() {
+		Minecraft client = Minecraft.getInstance();
+		if (client.getWindow() != null) {
 			GpuEntityOcclusionQuery.get().endFrame();
 		}
 	}
@@ -159,7 +173,10 @@ public final class CullingPipeline {
 	}
 
 	public boolean isEntityVisible(int entityId) {
-		return visibleEntities.isEmpty() || visibleEntities.contains(entityId);
+		if (!entitiesEvaluatedThisFrame) {
+			return true;
+		}
+		return visibleEntities.contains(entityId);
 	}
 
 	public boolean isSectionVisible(SectionKey key) {
@@ -181,19 +198,34 @@ public final class CullingPipeline {
 	public void onWorldUnload() {
 		visibleSections.clear();
 		visibleEntities.clear();
+		entitiesEvaluatedThisFrame = false;
 		stats.reset();
 		entityCuller.velocityTracker().clear();
 	}
 
 	private static Frustum captureFrustum(Minecraft client) {
-		try {
-			var field = client.levelRenderer.getClass().getDeclaredField("cullingFrustum");
-			field.setAccessible(true);
-			return (Frustum) field.get(client.levelRenderer);
-		} catch (ReflectiveOperationException exception) {
-			// TODO: replace this reflection with an accessor mixin on LevelRenderer.
-			return null;
+		Frustum captured = client.levelRenderer.getCapturedFrustum();
+		if (captured != null) {
+			return captured;
 		}
+
+		Camera camera = client.gameRenderer.getMainCamera();
+		float partialTick = client.getDeltaTracker().getGameTimeDeltaPartialTick(false);
+		Matrix4f projection = new Matrix4f(client.gameRenderer.getProjectionMatrix(partialTick));
+
+		Matrix4f view = new Matrix4f();
+		Quaternionf rotation = camera.rotation();
+		view.rotate(rotation.conjugate(new Quaternionf()));
+		view.translate(
+				-(float) camera.position().x,
+				-(float) camera.position().y,
+				-(float) camera.position().z
+		);
+
+		Frustum frustum = new Frustum(projection, view);
+		Vec3 pos = camera.position();
+		frustum.prepare(pos.x, pos.y, pos.z);
+		return frustum;
 	}
 
 	private static Vec3 estimateSunDirection(Minecraft client) {

@@ -6,8 +6,7 @@ import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
 /**
- * Packet compression with a Java Deflater/Inflater fallback. The native path is currently an
- * identity wrapper — swapping in libdeflate/zstd (SIMD) is still to do.
+ * Packet compression with native LZ77-lite and Java Deflater fallback.
  */
 public final class NativePacketCompressor {
 	private NativePacketCompressor() {

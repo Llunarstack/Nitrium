@@ -39,6 +39,7 @@ public final class Nitrium {
 		// Load the native core before subsystems that probe native availability at init time
 		// (e.g. async chunk storage), otherwise they latch onto the Java fallback.
 		NativeBootstrap.init();
+		dev.nitrium.config.HardwareTuner.tuneServer();
 		dev.nitrium.entity.EntityOptimizationEngine.init();
 		NitriumWorldgen.init();
 		NitriumLighting.init();

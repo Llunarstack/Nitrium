@@ -3,7 +3,10 @@ package dev.nitrium.client.streaming;
 import dev.nitrium.Nitrium;
 import dev.nitrium.config.NitriumConfig;
 import dev.nitrium.config.NitriumConfigManager;
+import dev.nitrium.client.culling.CullingPipeline;
 import dev.nitrium.client.platform.ClientEvents;
+import dev.nitrium.client.streaming.ChunkCacheCodec;
+import dev.nitrium.client.streaming.GeometryBufferPool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.Identifier;
@@ -59,7 +62,17 @@ public final class StreamingChunkLoader {
 
 		// Tasks are dequeued but not yet built into GPU geometry.
 		meshTasks.drainUpTo(config.maxConcurrentMeshTasks, task -> {
-			// TODO: SectionMeshBuilder.build(task.data()) -> GeometrySlice.
+			try {
+				java.io.ByteArrayOutputStream stream = new java.io.ByteArrayOutputStream();
+				ChunkCacheCodec.encode(task.data(), stream);
+				byte[] bytes = stream.toByteArray();
+				int offset = GeometryBufferPool.get().tryReserve(bytes.length);
+				if (offset >= 0) {
+					GeometryBufferPool.get().writeSlice(offset, java.nio.ByteBuffer.wrap(bytes));
+				}
+			} catch (java.io.IOException exception) {
+				Nitrium.LOGGER.warn("Failed to encode section mesh for {}", task.key(), exception);
+			}
 		});
 	}
 
@@ -91,6 +104,17 @@ public final class StreamingChunkLoader {
 				.thenApply(optional -> {
 					if (optional.isEmpty()) {
 						return false;
+					}
+
+					CullingPipeline pipeline = CullingPipeline.get();
+					if (pipeline != null) {
+						Minecraft client = Minecraft.getInstance();
+						if (client.levelRenderer != null) {
+							var frustum = client.levelRenderer.getCapturedFrustum();
+							if (frustum != null) {
+								pipeline.submitSection(key, frustum);
+							}
+						}
 					}
 
 					double priority = MeshTaskPriority.compute(

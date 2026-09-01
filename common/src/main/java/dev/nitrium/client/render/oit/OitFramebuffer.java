@@ -67,6 +67,7 @@ public final class OitFramebuffer implements AutoCloseable {
 		bind();
 		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+		GL30.glClearBufferfi(GL30.GL_COLOR, 1, 1.0f, 0);
 		unbind();
 	}
 

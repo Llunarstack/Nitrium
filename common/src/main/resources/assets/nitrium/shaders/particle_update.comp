@@ -1,0 +1,31 @@
+#version 430 core
+layout(local_size_x = 256) in;
+
+struct Particle {
+    vec4 positionLife;
+    vec4 velocityType;
+};
+
+layout(std430, binding = 0) buffer Particles {
+    Particle particles[];
+};
+
+uniform float uDeltaTime;
+uniform int uCount;
+
+void main() {
+    uint index = gl_GlobalInvocationID.x;
+    if (index >= uint(uCount)) {
+        return;
+    }
+
+    Particle p = particles[index];
+    if (p.positionLife.w <= 0.0) {
+        return;
+    }
+
+    p.positionLife.xyz += p.velocityType.xyz * uDeltaTime;
+    p.positionLife.w -= uDeltaTime;
+    p.velocityType.y -= 9.8 * uDeltaTime;
+    particles[index] = p;
+}

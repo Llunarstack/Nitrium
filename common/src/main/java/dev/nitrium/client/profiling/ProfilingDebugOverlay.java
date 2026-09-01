@@ -5,6 +5,7 @@ import dev.nitrium.client.culling.CullingPipeline;
 import dev.nitrium.client.entity.EntityRenderOptimizer;
 import dev.nitrium.client.governor.QualityGovernor;
 import dev.nitrium.config.HardwareProfile;
+import dev.nitrium.nativecore.CpuCapabilities;
 import dev.nitrium.config.NitriumConfigManager;
 import dev.nitrium.client.platform.ClientEvents;
 import net.minecraft.client.Minecraft;
@@ -61,7 +62,8 @@ public final class ProfilingDebugOverlay {
 			y += lineHeight;
 			HardwareProfile profile = gpu.hardwareProfile();
 			draw(graphics, y, color, String.format(
-					"GPU: %s | VRAM: %s MB | Profile: %s",
+					"GPU: %s (%s) | VRAM: %s MB | Profile: %s",
+					gpu.vendor(),
 					gpu.renderer(),
 					gpu.dedicatedVramMb() > 0 ? Integer.toString(gpu.dedicatedVramMb()) : "?",
 					profile
@@ -71,6 +73,17 @@ public final class ProfilingDebugOverlay {
 					"Shadow ceiling: %dpx @ %d blocks",
 					profile.maxShadowMapResolution(),
 					profile.maxShadowDistanceBlocks()
+			));
+		}
+
+		CpuCapabilities cpu = CpuCapabilities.get();
+		if (cpu != null) {
+			y += lineHeight;
+			draw(graphics, y, color, String.format(
+					"CPU: %s (%d cores, AVX2=%s)",
+					cpu.vendor(),
+					cpu.physicalCores(),
+					cpu.hasAvx2()
 			));
 		}
 

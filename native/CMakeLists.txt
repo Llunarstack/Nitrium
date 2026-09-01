@@ -9,6 +9,7 @@ find_package(JNI REQUIRED)
 
 add_library(nitrium_native SHARED
     src/nitrium_jni.cpp
+    src/cpu_capabilities.cpp
     src/simd_frustum_cull.cpp
     src/simd_noise3d.cpp
     src/native_compress.cpp

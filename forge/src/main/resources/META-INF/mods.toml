@@ -14,6 +14,12 @@ A performance mod with an adaptive quality governor, entity render culling, and 
 tick/worldgen/lighting optimizations. Complements Sodium/Embeddium, Iris/Oculus and friends.
 '''
 
+[[mixins]]
+config = "nitrium.mixins.json"
+
+[[mixins]]
+config = "nitrium.client.mixins.json"
+
 [[dependencies.nitrium]]
 modId = "forge"
 mandatory = true

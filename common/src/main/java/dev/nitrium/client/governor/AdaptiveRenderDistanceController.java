@@ -83,10 +83,16 @@ public final class AdaptiveRenderDistanceController {
 
 	private int apply(OptionInstance<Integer> option, int desired, int min, int max, int cooldownTicks, String reason) {
 		int clamped = Math.clamp(desired, min, max);
+		// Never mutate the vanilla render-distance option — LevelRenderer rebuilds all chunks when it
+		// changes, which looks like the world is refreshing. Track the recommendation for the debug
+		// overlay only.
 		if (clamped != option.get()) {
-			option.set(clamped);
-			Nitrium.LOGGER.debug("Nitrium adaptive render distance: {} -> {} chunks ({})",
-					lastAppliedChunks, clamped, reason);
+			Nitrium.LOGGER.debug(
+					"Nitrium adaptive render distance (advisory only): {} -> {} chunks ({})",
+					lastAppliedChunks,
+					clamped,
+					reason
+			);
 		}
 		lastAppliedChunks = clamped;
 		belowFloorStreakTicks = 0;
