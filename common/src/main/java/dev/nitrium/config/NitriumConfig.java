@@ -342,4 +342,12 @@ public final class NitriumConfig {
 	 * Dedicated servers should use {@code region-file-compression} in server.properties instead.
 	 */
 	public String regionFileCompression = "default";
+
+	// --- Chunk pre-generation (/nitrium pregen) ---
+
+	/**
+	 * Chunks generated per server tick while {@code /nitrium pregen} runs. Higher finishes faster but
+	 * costs more per-tick time; keep it low enough that the server stays responsive during pre-gen.
+	 */
+	public int pregenChunksPerTick = 4;
 }

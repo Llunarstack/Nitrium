@@ -49,6 +49,14 @@ public final class Nitrium {
 		NitriumMemoryLayout.init();
 		NitriumStorage.init();
 		NitriumLifecycle.init();
+
+		dev.nitrium.platform.ServerEvents events = dev.nitrium.platform.ServerEvents.get();
+		if (events != null) {
+			events.registerCommands(dev.nitrium.pregen.PregenCommand::register);
+			events.serverTickEnd(server ->
+					dev.nitrium.pregen.PregenManager.get().tick(NitriumConfigManager.get().pregenChunksPerTick));
+		}
+
 		LOGGER.info("Nitrium performance mod initializing");
 	}
 

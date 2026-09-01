@@ -1,9 +1,12 @@
 package dev.nitrium.neoforge;
 
+import com.mojang.brigadier.CommandDispatcher;
 import dev.nitrium.platform.ServerEvents;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
@@ -47,5 +50,10 @@ public final class NeoForgeServerEvents implements ServerEvents {
 				callback.accept(level.getServer(), level);
 			}
 		});
+	}
+
+	@Override
+	public void registerCommands(Consumer<CommandDispatcher<CommandSourceStack>> callback) {
+		NeoForge.EVENT_BUS.addListener((RegisterCommandsEvent event) -> callback.accept(event.getDispatcher()));
 	}
 }

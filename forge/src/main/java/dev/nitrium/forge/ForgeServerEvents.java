@@ -1,8 +1,11 @@
 package dev.nitrium.forge;
 
+import com.mojang.brigadier.CommandDispatcher;
 import dev.nitrium.platform.ServerEvents;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
@@ -47,5 +50,10 @@ public final class ForgeServerEvents implements ServerEvents {
 				callback.accept(level.getServer(), level);
 			}
 		});
+	}
+
+	@Override
+	public void registerCommands(Consumer<CommandDispatcher<CommandSourceStack>> callback) {
+		RegisterCommandsEvent.BUS.addListener((RegisterCommandsEvent event) -> callback.accept(event.getDispatcher()));
 	}
 }

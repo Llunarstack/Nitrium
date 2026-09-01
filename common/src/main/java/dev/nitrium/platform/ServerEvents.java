@@ -1,5 +1,7 @@
 package dev.nitrium.platform;
 
+import com.mojang.brigadier.CommandDispatcher;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 
@@ -21,6 +23,8 @@ public interface ServerEvents {
 	void serverStopping(Consumer<MinecraftServer> callback);
 
 	void serverWorldUnload(BiConsumer<MinecraftServer, ServerLevel> callback);
+
+	void registerCommands(Consumer<CommandDispatcher<CommandSourceStack>> callback);
 
 	static ServerEvents get() {
 		return Holder.instance;
